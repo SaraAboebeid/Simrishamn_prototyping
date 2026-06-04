@@ -63,11 +63,11 @@ function AttractionPopup({ a, year }) {
         </div>
         <div>
           <div style={{ color: '#64748B' }}>Capacity use</div>
-          <div style={{ fontWeight: 600, color: pct > 80 ? '#C8102E' : '#F1F5F9' }}>{pct}%</div>
+          <div style={{ fontWeight: 600, color: pct > 80 ? '#EF4444' : '#F1F5F9' }}>{pct}%</div>
         </div>
         <div>
           <div style={{ color: '#64748B' }}>Rating</div>
-          <div style={{ fontWeight: 600, color: '#FFCD00' }}>★ {a.rating}</div>
+          <div style={{ fontWeight: 600, color: '#F59E0B' }}>★ {a.rating}</div>
         </div>
         <div>
           <div style={{ color: '#64748B' }}>Pressure</div>

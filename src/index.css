@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /*
- * Skåne flag colour palette used throughout:
- *   Red  #C8102E  ·  Gold  #FFCD00  ·  Blue  #1E3F9E
+ * Summer / Österlen palette:
+ *   Orange #FF6B35  ·  Cyan #06B6D4  ·  Amber #F59E0B
  */
 
 @layer base {
@@ -13,16 +13,16 @@
     overflow: hidden;
   }
   body {
-    background-color: #190B0E;   /* dash-900 */
+    background-color: #0D1117;
     color: #F1F5F9;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  /* Custom scrollbar — Skåne red accent */
+  /* Custom scrollbar — orange accent */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track  { background: #201015; }
-  ::-webkit-scrollbar-thumb  { background: #3A1E24; border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: #4E2A30; }
+  ::-webkit-scrollbar-track  { background: #161D2B; }
+  ::-webkit-scrollbar-thumb  { background: #2D3A52; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3D4F6E; }
 }
 
 @layer components {
@@ -34,7 +34,7 @@
   }
 }
 
-/* ─── Custom range slider — Skåne gold thumb ──── */
+/* ─── Custom range slider — orange thumb ────── */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -43,7 +43,7 @@ input[type="range"] {
   width: 100%;
 }
 input[type="range"]::-webkit-slider-runnable-track {
-  background: #3A1E24;
+  background: #2D3A52;
   height: 4px;
   border-radius: 4px;
 }
@@ -53,17 +53,17 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #FFCD00;
-  border: 2.5px solid #190B0E;
-  box-shadow: 0 0 10px rgba(255,205,0,0.55);
+  background: #FF6B35;
+  border: 2.5px solid #0D1117;
+  box-shadow: 0 0 10px rgba(255,107,53,0.6);
   margin-top: -7px;
   transition: box-shadow 0.2s;
 }
 input[type="range"]:hover::-webkit-slider-thumb {
-  box-shadow: 0 0 18px rgba(255,205,0,0.9);
+  box-shadow: 0 0 16px rgba(255,107,53,0.9);
 }
 input[type="range"]::-moz-range-track {
-  background: #3A1E24;
+  background: #2D3A52;
   height: 4px;
   border-radius: 4px;
 }
@@ -71,28 +71,28 @@ input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #FFCD00;
-  border: 2.5px solid #190B0E;
-  box-shadow: 0 0 10px rgba(255,205,0,0.55);
+  background: #FF6B35;
+  border: 2.5px solid #0D1117;
+  box-shadow: 0 0 10px rgba(255,107,53,0.6);
 }
 
-/* ─── Leaflet dark overrides — Skåne darks ───── */
+/* ─── Leaflet dark overrides ─────────────────── */
 .leaflet-container {
-  background: #150a0c !important;
+  background: #1a1f2e !important;
   font-family: 'Inter', sans-serif !important;
 }
 .leaflet-popup-content-wrapper {
-  background: #2B1519 !important;
+  background: #1E2840 !important;
   color: #F1F5F9 !important;
-  border: 1px solid #3A1E24 !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.7) !important;
+  border: 1px solid #2D3A52 !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
   border-radius: 12px !important;
 }
 .leaflet-popup-content {
   margin: 12px 16px !important;
 }
 .leaflet-popup-tip {
-  background: #2B1519 !important;
+  background: #1E2840 !important;
 }
 .leaflet-popup-close-button {
   color: #94A3B8 !important;
@@ -100,20 +100,20 @@ input[type="range"]::-moz-range-thumb {
   padding: 6px 8px !important;
 }
 .leaflet-popup-close-button:hover {
-  color: #FFCD00 !important;
+  color: #F1F5F9 !important;
 }
 .leaflet-bar a {
-  background: #2B1519 !important;
+  background: #1E2840 !important;
   color: #94A3B8 !important;
-  border-color: #3A1E24 !important;
+  border-color: #2D3A52 !important;
   font-size: 16px !important;
 }
 .leaflet-bar a:hover {
-  background: #3A1E24 !important;
-  color: #FFCD00 !important;
+  background: #2D3A52 !important;
+  color: #F1F5F9 !important;
 }
 .leaflet-control-attribution {
-  background: rgba(25,11,14,0.85) !important;
+  background: rgba(13,17,23,0.8) !important;
   color: #475569 !important;
   font-size: 9px !important;
 }
@@ -121,11 +121,11 @@ input[type="range"]::-moz-range-thumb {
   color: #64748B !important;
 }
 
-/* ─── Marker pulse — Skåne gold ring ─────────── */
+/* ─── Marker pulse — orange ring ─────────────── */
 @keyframes markerPulse {
-  0%   { box-shadow: 0 0 0 0px  rgba(255,205,0,0.5); }
-  70%  { box-shadow: 0 0 0 12px rgba(255,205,0,0);   }
-  100% { box-shadow: 0 0 0 0px  rgba(255,205,0,0);   }
+  0%   { box-shadow: 0 0 0 0px  rgba(255,107,53,0.5); }
+  70%  { box-shadow: 0 0 0 12px rgba(255,107,53,0);   }
+  100% { box-shadow: 0 0 0 0px  rgba(255,107,53,0);   }
 }
 .marker-selected {
   animation: markerPulse 1.8s infinite;

@@ -8,12 +8,12 @@ export function Divider() {
   return <div className="border-t border-dash-600 my-4" />
 }
 
-export function Toggle({ checked, onChange, color = '#FFCD00' }) {
+export function Toggle({ checked, onChange, color = '#FF6B35' }) {
   return (
     <button
       onClick={onChange}
       className="relative flex-shrink-0 w-10 h-5 rounded-full transition-colors duration-200 focus:outline-none"
-      style={{ backgroundColor: checked ? color : '#3A1E24' }}
+      style={{ backgroundColor: checked ? color : '#2D3A52' }}
       aria-pressed={checked}
     >
       <span

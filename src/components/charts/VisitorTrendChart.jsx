@@ -33,7 +33,7 @@ export default function VisitorTrendChart() {
   return (
     <div className="panel-card chart-card h-full flex flex-col">
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full" style={{ background: '#FFCD00' }} />
+        <div className="w-2 h-2 rounded-full" style={{ background: '#06B6D4' }} />
         <h3 className="text-xs font-semibold text-slate-300">Visitor Trend 2018 – 2024</h3>
       </div>
       <div className="flex-1 min-h-0">
@@ -41,16 +41,16 @@ export default function VisitorTrendChart() {
           <AreaChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="gTotal" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#FFCD00" stopOpacity={0.40} />
-                <stop offset="95%" stopColor="#FFCD00" stopOpacity={0} />
+                <stop offset="5%"  stopColor="#06B6D4" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#06B6D4" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gDomestic" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#4169C8" stopOpacity={0.30} />
-                <stop offset="95%" stopColor="#4169C8" stopOpacity={0} />
+                <stop offset="5%"  stopColor="#10B981" stopOpacity={0.30} />
+                <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gIntl" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#C8102E" stopOpacity={0.30} />
-                <stop offset="95%" stopColor="#C8102E" stopOpacity={0} />
+                <stop offset="5%"  stopColor="#F59E0B" stopOpacity={0.30} />
+                <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#2D3A52" vertical={false} />
@@ -70,25 +70,25 @@ export default function VisitorTrendChart() {
             <Tooltip content={<CustomTooltip />} />
             <ReferenceLine
               x={selectedYear}
-              stroke="#FFCD00"
+              stroke="#FF6B35"
               strokeDasharray="4 3"
               strokeWidth={1.5}
-              label={{ value: selectedYear, fill: '#FFCD00', fontSize: 9, dy: -6 }}
+              label={{ value: selectedYear, fill: '#FF6B35', fontSize: 9, dy: -6 }}
             />
             <Area
               dataKey="total"     name="Total"
-              stroke="#FFCD00"    strokeWidth={2}
-              fill="url(#gTotal)" dot={false} activeDot={{ r: 4, fill: '#FFCD00' }}
+              stroke="#06B6D4"    strokeWidth={2}
+              fill="url(#gTotal)" dot={false} activeDot={{ r: 4, fill: '#06B6D4' }}
             />
             <Area
               dataKey="domestic"  name="Domestic"
-              stroke="#4169C8"    strokeWidth={1.5}
-              fill="url(#gDomestic)" dot={false} activeDot={{ r: 3, fill: '#4169C8' }}
+              stroke="#10B981"    strokeWidth={1.5}
+              fill="url(#gDomestic)" dot={false} activeDot={{ r: 3, fill: '#10B981' }}
             />
             <Area
               dataKey="international" name="International"
-              stroke="#C8102E"    strokeWidth={1.5}
-              fill="url(#gIntl)"  dot={false} activeDot={{ r: 3, fill: '#C8102E' }}
+              stroke="#F59E0B"    strokeWidth={1.5}
+              fill="url(#gIntl)"  dot={false} activeDot={{ r: 3, fill: '#F59E0B' }}
             />
             <Legend
               wrapperStyle={{ fontSize: 10, paddingTop: 4 }}

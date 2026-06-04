@@ -52,7 +52,7 @@ export default function AttractionRankChart() {
   return (
     <div className="panel-card chart-card h-full flex flex-col">
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full" style={{ background: '#FFCD00' }} />
+        <div className="w-2 h-2 rounded-full" style={{ background: '#F59E0B' }} />
         <h3 className="text-xs font-semibold text-slate-300">Top Attractions {selectedYear}</h3>
       </div>
       <div className="flex-1 min-h-0">

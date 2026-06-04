@@ -21,7 +21,7 @@ export default function YearSlider() {
           <span
             key={y}
             className="transition-colors"
-            style={{ color: y === selectedYear ? '#FFCD00' : undefined, fontWeight: y === selectedYear ? 700 : 400 }}
+            style={{ color: y === selectedYear ? '#FF6B35' : undefined, fontWeight: y === selectedYear ? 700 : 400 }}
           >
             {y}
           </span>

@@ -4,10 +4,10 @@ import { useDashboard } from '../../context/DashboardContext'
 import { SectionLabel, Toggle } from './ui'
 
 const LAYER_DEFS = [
-  { key: 'attractions',     label: 'Attractions',     color: '#FFCD00', icon: Map         },
-  { key: 'heatmap',         label: 'Visitor Heatmap', color: '#C8102E', icon: Thermometer },
+  { key: 'attractions',     label: 'Attractions',     color: '#F59E0B', icon: Map         },
+  { key: 'heatmap',         label: 'Visitor Heatmap', color: '#EF4444', icon: Thermometer },
   { key: 'overtourism',     label: 'Pressure Zones',  color: '#F97316', icon: Activity    },
-  { key: 'clusters',        label: 'Cluster View',    color: '#4169C8', icon: Layers      },
+  { key: 'clusters',        label: 'Cluster View',    color: '#06B6D4', icon: Layers      },
   { key: 'uploadedGeoJSON', label: 'Imported Layer',  color: '#8B5CF6', icon: Upload      },
 ]
 

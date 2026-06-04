@@ -28,7 +28,7 @@ export default function SeasonFilter() {
                   : 'bg-dash-700 text-slate-400 hover:bg-dash-600 hover:text-slate-200'
               }`}
               style={active
-                ? { backgroundColor: '#C8102E', boxShadow: '0 4px 14px rgba(200,16,46,0.40)' }
+                ? { backgroundColor: '#FF6B35', boxShadow: '0 4px 14px rgba(255,107,53,0.40)' }
                 : {}}
             >
               {s.label}

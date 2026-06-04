@@ -1,58 +1,59 @@
 /**
- * theme/colors.js  –  Skåne regional flag palette
+ * theme/colors.js  –  Summer / Österlen tourism palette
  *
- *  🟥  Red background : #C8102E
- *  🟨  Gold cross     : #FFCD00
- *  🔵  Blue crown     : #1E3F9E
+ *  🟠  Orange  #FF6B35  – primary accent (sunsets, warmth)
+ *  🔵  Cyan    #06B6D4  – Baltic coast, water
+ *  🟡  Amber   #F59E0B  – harvest, food, sand
+ *  🟢  Emerald #10B981  – nature, parks
+ *  🟣  Violet  #8B5CF6  – events, festivals
  */
 
-// ── Skåne flag primaries ──────────────────────────────────────────
-export const SKANE_RED  = '#C8102E'
-export const SKANE_GOLD = '#FFCD00'
-export const SKANE_BLUE = '#1E3F9E'
+// ── Primary accents ───────────────────────────────────────────────
+export const ORANGE  = '#FF6B35'
+export const CYAN    = '#06B6D4'
+export const AMBER   = '#F59E0B'
+export const EMERALD = '#10B981'
+export const VIOLET  = '#8B5CF6'
 
-// ── Dashboard dark surfaces (red-tinted darks) ────────────────────
+// ── Dashboard dark surfaces (deep navy / slate) ───────────────────
 export const SURFACE = {
-  950: '#0F0608',
-  900: '#190B0E',
-  800: '#201015',
-  700: '#2B1519',
-  600: '#3A1E24',
-  500: '#4E2A30',
+  900: '#0D1117',
+  800: '#161D2B',
+  700: '#1E2840',
+  600: '#2D3A52',
+  500: '#3D4F6E',
 }
 
 // ── Data-viz palette ──────────────────────────────────────────────
 export const VIZ = {
-  gold:    '#FFCD00',  // Skåne gold — primary series
-  red:     '#C8102E',  // Skåne red  — alerts / critical
-  blue:    '#4169C8',  // Skåne blue tint — secondary
-  teal:    '#0EA5B0',  // coastal / beach
-  emerald: '#22C55E',  // nature / parks
-  violet:  '#8B5CF6',  // events
-  amber:   '#F59E0B',  // food / harvest
-  softRed: '#E85C75',
+  orange:  '#FF6B35',
+  cyan:    '#06B6D4',
+  emerald: '#10B981',
+  amber:   '#F59E0B',
+  violet:  '#8B5CF6',
+  rose:    '#F43F5E',
 }
 
 // ── Tourism-category colours ──────────────────────────────────────
 export const TYPE_COLORS = {
-  cultural: SKANE_GOLD,   // gold for cultural heritage
-  nature:   VIZ.emerald,
-  beach:    VIZ.teal,
-  food:     VIZ.amber,
-  events:   VIZ.violet,
+  cultural: AMBER,
+  nature:   EMERALD,
+  beach:    CYAN,
+  food:     ORANGE,
+  events:   VIOLET,
 }
 
 // ── Overtourism pressure colours ─────────────────────────────────
 export const PRESSURE_COLORS = {
-  low:      VIZ.emerald,  // #22C55E
-  medium:   SKANE_GOLD,   // #FFCD00
+  low:      '#10B981',
+  medium:   '#F59E0B',
   high:     '#F97316',
-  critical: SKANE_RED,    // #C8102E
+  critical: '#EF4444',
 }
 
 // ── Gradient helpers ──────────────────────────────────────────────
 export const GRADIENT = {
-  header: 'linear-gradient(135deg, #8B0D1F 0%, #C8102E 45%, #1E3F9E 100%)',
-  brand:  'linear-gradient(135deg, #C8102E 0%, #9A0D23 50%, #1E3F9E 100%)',
-  heat:   'linear-gradient(90deg, #4169C8, #0EA5B0, #FFCD00, #F97316, #C8102E)',
+  header: 'linear-gradient(135deg, #FF6B35 0%, #F59E0B 45%, #06B6D4 100%)',
+  brand:  'linear-gradient(135deg, #FF6B35 0%, #F97316 50%, #06B6D4 100%)',
+  heat:   'linear-gradient(90deg, #06B6D4, #10B981, #F59E0B, #F97316, #EF4444)',
 }

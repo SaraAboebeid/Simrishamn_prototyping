@@ -3,12 +3,12 @@ import { Circle } from 'react-leaflet'
 import { useDashboard } from '../../context/DashboardContext'
 import { getHeatmapData } from '../../data/simrishamnData'
 
-// Skåne-flag heat ramp: blue (cool/low) → teal → gold → red (hot/critical)
+// Summer heat ramp: cyan (cool/low) -> emerald -> amber -> red (hot/critical)
 function heatColor(t) {
-  if (t < 0.25) return '#4169C8'  // Skåne blue
-  if (t < 0.5)  return '#0EA5B0'  // teal
-  if (t < 0.75) return '#FFCD00'  // Skåne gold
-  return '#C8102E'                 // Skåne red
+  if (t < 0.25) return '#06B6D4'  // cyan — Baltic coast
+  if (t < 0.5)  return '#10B981'  // emerald — nature
+  if (t < 0.75) return '#F59E0B'  // amber — warm
+  return '#EF4444'                 // red — critical
 }
 
 export default function HeatmapLayer() {

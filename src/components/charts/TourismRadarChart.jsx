@@ -35,7 +35,7 @@ export default function TourismRadarChart() {
   return (
     <div className="panel-card chart-card h-full flex flex-col">
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full" style={{ background: '#FFCD00' }} />
+        <div className="w-2 h-2 rounded-full" style={{ background: '#8B5CF6' }} />
         <h3 className="text-xs font-semibold text-slate-300">Tourism Type Distribution</h3>
       </div>
       <div className="flex-1 min-h-0">
@@ -57,12 +57,12 @@ export default function TourismRadarChart() {
             <Radar
               name="Visitors"
               dataKey="visitors"
-              stroke="#FFCD00"
+              stroke="#8B5CF6"
               strokeWidth={2}
-              fill="#FFCD00"
-              fillOpacity={0.15}
-              dot={{ fill: '#FFCD00', r: 3, strokeWidth: 0 }}
-              activeDot={{ r: 5, fill: '#FFCD00' }}
+              fill="#8B5CF6"
+              fillOpacity={0.2}
+              dot={{ fill: '#8B5CF6', r: 3, strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: '#8B5CF6' }}
             />
           </RadarChart>
         </ResponsiveContainer>

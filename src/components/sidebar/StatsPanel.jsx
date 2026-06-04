@@ -2,7 +2,7 @@ import React from 'react'
 import { TrendingUp, Users, Waves } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
 import { yearlyStats, formatVisitors } from '../../data/simrishamnData'
-import { PRESSURE_COLORS, SKANE_RED, SKANE_GOLD } from '../../theme/colors'
+import { PRESSURE_COLORS, ORANGE, CYAN } from '../../theme/colors'
 import { SectionLabel } from './ui'
 
 // ── SVG arc gauge for Overtourism Index ──────────────────────────
@@ -21,7 +21,7 @@ function OvertourismGauge({ value }) {
     <div className="flex items-center gap-3">
       <div className="relative flex items-center justify-center w-16 h-16">
         <svg width="64" height="64" className="-rotate-90">
-          <circle cx="32" cy="32" r={r} fill="none" stroke="#3A1E24" strokeWidth="5" />
+          <circle cx="32" cy="32" r={r} fill="none" stroke="#2D3A52" strokeWidth="5" />
           <circle
             cx="32" cy="32" r={r} fill="none"
             stroke={color} strokeWidth="5"
@@ -60,14 +60,14 @@ export default function StatsPanel() {
       <div className="grid grid-cols-2 gap-2 mb-3">
         <div className="bg-dash-700 rounded-xl p-2.5">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <Users size={11} style={{ color: SKANE_GOLD }} />
+            <Users size={11} style={{ color: CYAN }} />
             <span className="text-[10px] text-slate-500">Total</span>
           </div>
           <div className="text-base font-bold text-white">{formatVisitors(stats.total)}</div>
         </div>
         <div className="bg-dash-700 rounded-xl p-2.5">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <Waves size={11} style={{ color: SKANE_RED }} />
+            <Waves size={11} style={{ color: ORANGE }} />
             <span className="text-[10px] text-slate-500">Avg Stay</span>
           </div>
           <div className="text-base font-bold text-white">{stats.avgStay}d</div>
