@@ -72,9 +72,10 @@ function createIcon(type, fraction, isSelected) {
 }
 
 // ── Popup card ────────────────────────────────────────────────────
-function AttractionPopup({ a, realVisits, year }) {
-  const v      = a.visitors[year] ?? 0
-  const pct    = Math.round((v / 365 / a.capacityPerDay) * 100)
+function AttractionPopup({ a, realVisits }) {
+  const pct    = a.capacityPerDay > 0
+    ? Math.round((realVisits / a.capacityPerDay) * 100)
+    : 0
   const pColor = PRESSURE_COLORS[a.pressureLevel]
   const icon   = TOURISM_TYPES.find(t => t.id === a.type)?.icon || '📍'
 
@@ -92,16 +93,12 @@ function AttractionPopup({ a, realVisits, year }) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px', fontSize: 11 }}>
         <div>
-          <div style={{ color: '#64748B' }}>Visitors {year}</div>
-          <div style={{ fontWeight: 600, color: '#F1F5F9' }}>{formatVisitors(v)}</div>
-        </div>
-        <div>
-          <div style={{ color: '#64748B' }}>Capacity use</div>
-          <div style={{ fontWeight: 600, color: pct > 80 ? '#EF4444' : '#F1F5F9' }}>{pct}%</div>
-        </div>
-        <div>
           <div style={{ color: '#64748B' }}>GPS visits (filtered)</div>
-          <div style={{ fontWeight: 700, color: '#FF6B35' }}>{realVisits.toLocaleString()}</div>
+          <div style={{ fontWeight: 700, color: '#FF6B35' }}>{formatVisitors(realVisits)}</div>
+        </div>
+        <div>
+          <div style={{ color: '#64748B' }}>Capacity use vs day limit</div>
+          <div style={{ fontWeight: 600, color: pct > 80 ? '#EF4444' : '#F1F5F9' }}>{pct}%</div>
         </div>
         <div>
           <div style={{ color: '#64748B' }}>Pressure</div>
@@ -116,7 +113,7 @@ function AttractionPopup({ a, realVisits, year }) {
 
 // ── Layer component ───────────────────────────────────────────────
 export default function AttractionLayer() {
-  const { selectedYear, selectedTypes, selectedAttraction, setSelectedAttraction, filteredVisits } = useDashboard()
+  const { selectedTypes, selectedAttraction, setSelectedAttraction, filteredVisits } = useDashboard()
   const filtered = getFilteredAttractions(selectedTypes)
 
   // Count GPS visits near each attraction (reactive to filter)
@@ -165,7 +162,7 @@ export default function AttractionLayer() {
           eventHandlers={{ click: () => setSelectedAttraction(a.id) }}
         >
           <Popup>
-            <AttractionPopup a={a} realVisits={count} year={selectedYear} />
+            <AttractionPopup a={a} realVisits={count} />
           </Popup>
         </Marker>
       </React.Fragment>

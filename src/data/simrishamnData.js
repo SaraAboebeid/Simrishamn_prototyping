@@ -79,14 +79,6 @@ export const attractions = [
     description: 'Unique private car museum with legendary Swedish rally driver Nisse Nilsson\'s collection of historic race cars.',
     rating: 4.4, capacityPerDay: 500, pressureLevel: 'low', area: 'Simrishamn',
   },
-  {
-    id: 'brantevik',
-    name: 'Brantevik',
-    type: 'cultural',
-    coords: [55.5167, 14.3333],
-    description: 'Picturesque fishing village 4 km south — departure point of the 1869 emigrant ship. Red cottages, calm harbour.',
-    rating: 4.5, capacityPerDay: 800, pressureLevel: 'high', area: 'Brantevik',
-  },
 ]
 
 // ── Overtourism zone polygons — Simrishamn area only ──────────────
@@ -97,13 +89,6 @@ export const overtourismZones = [
     level: 'high',
     coords: [[55.558,14.352],[55.558,14.358],[55.553,14.358],[55.553,14.352]],
     issue: 'Harbour & Skansen area reaches capacity on summer evenings and market weekends',
-  },
-  {
-    id: 'brantevik-zone',
-    name: 'Brantevik Harbour Zone',
-    level: 'high',
-    coords: [[55.521,14.325],[55.521,14.343],[55.512,14.343],[55.512,14.325]],
-    issue: 'Village capacity exceeded on summer weekends',
   },
   {
     id: 'tobisvik-zone',

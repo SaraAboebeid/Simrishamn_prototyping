@@ -19,6 +19,10 @@ L.Icon.Default.mergeOptions({
 // Simrishamn town centre
 const TOWN_CENTER = [55.5567, 14.3523]
 const TOWN_ZOOM   = 13
+const SIMRISHAMN_BOUNDS = [
+  [55.52, 14.31],
+  [55.59, 14.39],
+]
 
 export default function MapView() {
   const { activeLayers, uploadedLayers } = useDashboard()
@@ -32,6 +36,9 @@ export default function MapView() {
         zoom={TOWN_ZOOM}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
+        minZoom={12}
+        maxBounds={SIMRISHAMN_BOUNDS}
+        maxBoundsViscosity={1.0}
       >
         {/* CartoDB Dark Matter — uses OSM data with Skåne-friendly dark style */}
         <TileLayer
