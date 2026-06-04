@@ -7,6 +7,7 @@ import MapLegend       from './MapLegend'
 import AttractionLayer from './AttractionLayer'
 import HeatmapLayer    from './HeatmapLayer'
 import OvertourismLayer from './OvertourismLayer'
+import OriginLayer     from './OriginLayer'
 
 // Fix Leaflet default icon paths for Vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -49,6 +50,7 @@ export default function MapView() {
 
         {activeLayers.heatmap      && <HeatmapLayer />}
         {activeLayers.overtourism  && <OvertourismLayer />}
+        {activeLayers.origins      && <OriginLayer />}
         {activeLayers.attractions  && <AttractionLayer />}
 
         {activeLayers.uploadedGeoJSON && uploadedLayers.map((layer, i) => (

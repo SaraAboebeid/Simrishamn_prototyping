@@ -1,14 +1,15 @@
-import React from 'react'
-import { TrendingUp, Users, Waves } from 'lucide-react'
+import React, { useMemo } from 'react'
+import { TrendingUp, Users, Clock, MapPin, BarChart2, Calendar } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
-import { yearlyStats, formatVisitors } from '../../data/simrishamnData'
+import { computeKPIs } from '../../data/visitDataLoader'
 import { PRESSURE_COLORS, ORANGE, CYAN } from '../../theme/colors'
+import { MONTH_NAMES } from '../../data/swedishCalendar'
 import { SectionLabel } from './ui'
 
-// ── SVG arc gauge for Overtourism Index ──────────────────────────
-function OvertourismGauge({ value }) {
-  const r     = 26
-  const circ  = 2 * Math.PI * r
+// ── SVG arc gauge for Overtourism pressure ───────────────────────
+function PressureGauge({ value }) {
+  const r    = 26
+  const circ = 2 * Math.PI * r
   const offset = circ * (1 - Math.min(value, 100) / 100)
 
   const [color, label] =
@@ -38,43 +39,80 @@ function OvertourismGauge({ value }) {
       </div>
       <div>
         <div className="text-xs font-semibold" style={{ color }}>{label}</div>
-        <div className="text-[10px] text-slate-500 leading-tight">Overtourism<br />Index</div>
+        <div className="text-[10px] text-slate-500 leading-tight">Overtourism<br />Pressure</div>
       </div>
+    </div>
+  )
+}
+
+// ── KPI card ─────────────────────────────────────────────────────
+function KpiCard({ icon: Icon, label, value, sub, color }) {
+  return (
+    <div className="bg-dash-700 rounded-xl p-2.5">
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <Icon size={11} style={{ color }} />
+        <span className="text-[10px] text-slate-500">{label}</span>
+      </div>
+      <div className="text-sm font-bold text-white">{value}</div>
+      {sub && <div className="text-[9px] text-slate-500 mt-0.5">{sub}</div>}
     </div>
   )
 }
 
 // ── Main component ────────────────────────────────────────────────
 export default function StatsPanel() {
-  const { selectedYear } = useDashboard()
-  const stats = yearlyStats[selectedYear]
+  const { filteredVisits, dataLoaded } = useDashboard()
+
+  const kpi = useMemo(() => computeKPIs(filteredVisits), [filteredVisits])
+
+  // Scale pressure: assume 400 unique visitors/year ≈ 100% capacity for example data
+  const oti = dataLoaded
+    ? Math.min(100, Math.round((kpi.unique / 400) * 100))
+    : 0
+
+  const avgDwellH = kpi.avgDwellMin ? (kpi.avgDwellMin / 60).toFixed(1) : '–'
 
   return (
     <div>
       <SectionLabel>
         <span className="inline-flex items-center gap-1.5">
-          <TrendingUp size={10} /> Snapshot {selectedYear}
+          <TrendingUp size={10} /> KPI Snapshot
+          {!dataLoaded && <span className="text-slate-600 text-[9px]">loading…</span>}
         </span>
       </SectionLabel>
 
-      <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-dash-700 rounded-xl p-2.5">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <Users size={11} style={{ color: CYAN }} />
-            <span className="text-[10px] text-slate-500">Total</span>
-          </div>
-          <div className="text-base font-bold text-white">{formatVisitors(stats.total)}</div>
-        </div>
-        <div className="bg-dash-700 rounded-xl p-2.5">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <Waves size={11} style={{ color: ORANGE }} />
-            <span className="text-[10px] text-slate-500">Avg Stay</span>
-          </div>
-          <div className="text-base font-bold text-white">{stats.avgStay}d</div>
-        </div>
+      <div className="grid grid-cols-2 gap-1.5 mb-3">
+        <KpiCard
+          icon={Users}
+          label="Unique visitors"
+          value={kpi.unique.toLocaleString()}
+          sub={`${kpi.total.toLocaleString()} total visits`}
+          color={CYAN}
+        />
+        <KpiCard
+          icon={Clock}
+          label="Avg dwell time"
+          value={`${avgDwellH}h`}
+          sub={`${kpi.avgDwellMin} min avg`}
+          color={ORANGE}
+        />
+        <KpiCard
+          icon={Calendar}
+          label="Peak month"
+          value={kpi.peakMonth ? MONTH_NAMES[kpi.peakMonth] : '–'}
+          sub="highest visit count"
+          color="#F59E0B"
+        />
+        <KpiCard
+          icon={BarChart2}
+          label="Peak hour"
+          value={kpi.peakHour != null ? `${String(kpi.peakHour).padStart(2,'0')}:00` : '–'}
+          sub="most arrivals"
+          color="#8B5CF6"
+        />
       </div>
 
-      <OvertourismGauge value={stats.overtourismIndex} />
+      {dataLoaded && <PressureGauge value={oti} />}
     </div>
   )
 }
