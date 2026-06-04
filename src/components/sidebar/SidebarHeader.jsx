@@ -34,10 +34,10 @@ export default function SidebarHeader() {
         </div>
       </div>
 
-      {/* Visit count badge */}
+      {/* Visitor count badge */}
       <div className="mt-3 flex items-center gap-2">
         <div className="text-xs font-semibold text-white/90 bg-white/20 rounded-full px-3 py-0.5 backdrop-blur-sm">
-          {filteredVisits.length.toLocaleString()} visits
+          {uniqueFiltered.toLocaleString()} visitors
         </div>
         <div className="text-xs font-semibold rounded-full px-2 py-0.5 backdrop-blur-sm bg-cyan-400/20 text-cyan-200">
           {uniqueFiltered} unique

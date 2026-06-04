@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { TrendingUp, Clock, BarChart2, Calendar } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
-import { computeKPIs } from '../../data/visitDataLoader'
+import { computeKPIs, computePressureMetrics } from '../../data/visitDataLoader'
 import { PRESSURE_COLORS, ORANGE, CYAN } from '../../theme/colors'
 import { MONTH_NAMES } from '../../data/swedishCalendar'
 import { SectionLabel } from './ui'
@@ -61,14 +61,14 @@ function KpiCard({ icon: Icon, label, value, sub, color }) {
 
 // ── Main component ────────────────────────────────────────────────
 export default function StatsPanel() {
-  const { filteredVisits, dataLoaded } = useDashboard()
+  const { filteredVisits, allVisits, dataLoaded } = useDashboard()
 
   const kpi = useMemo(() => computeKPIs(filteredVisits), [filteredVisits])
-
-  // Scale pressure: assume 400 unique visitors/year ≈ 100% capacity for example data
-  const oti = dataLoaded
-    ? Math.min(100, Math.round((kpi.unique / 400) * 100))
-    : 0
+  const pressure = useMemo(
+    () => computePressureMetrics(filteredVisits, allVisits),
+    [filteredVisits, allVisits]
+  )
+  const oti = dataLoaded ? pressure.oti : 0
 
   const avgDwellH = kpi.avgDwellMin ? (kpi.avgDwellMin / 60).toFixed(1) : '–'
 
@@ -84,23 +84,23 @@ export default function StatsPanel() {
       <div className="grid grid-cols-2 gap-1.5 mb-3">
         <KpiCard
           icon={BarChart2}
-          label="Total visits"
+          label="Total visitors"
           value={kpi.total.toLocaleString()}
-          sub="all filtered visit records"
+          sub="unique visitors in current filter"
           color={CYAN}
         />
         <KpiCard
           icon={Clock}
           label="Avg dwell time"
           value={`${avgDwellH}h`}
-          sub={`${kpi.avgDwellMin} min mean duration per visit`}
+          sub={`${kpi.avgDwellMin} min mean duration per visitor`}
           color={ORANGE}
         />
         <KpiCard
           icon={Calendar}
           label="Peak month"
           value={kpi.peakMonth ? MONTH_NAMES[kpi.peakMonth] : '–'}
-          sub="highest visit count"
+          sub="highest visitor count"
           color="#F59E0B"
         />
         <KpiCard
@@ -113,6 +113,14 @@ export default function StatsPanel() {
       </div>
 
       {dataLoaded && <PressureGauge value={oti} />}
+
+      {dataLoaded && (
+        <div className="mt-2 text-[9px] text-slate-400 space-y-0.5">
+          <div>Daily load vs median: <span className="text-slate-200">{pressure.dailyLoad}</span></div>
+          <div>Peak-hour stress (p95): <span className="text-slate-200">{pressure.peakHourStress}</span></div>
+          <div>Hotspot concentration: <span className="text-slate-200">{pressure.hotspotConcentration}</span></div>
+        </div>
+      )}
     </div>
   )
 }

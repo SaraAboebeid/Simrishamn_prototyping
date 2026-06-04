@@ -1,14 +1,8 @@
 import React, { useMemo } from 'react'
-import { Circle } from 'react-leaflet'
+import { Circle, Tooltip } from 'react-leaflet'
 import { useDashboard } from '../../context/DashboardContext'
 
 const GRID_SIZE_DEG = 0.0015 // ~150-170m in this latitude band
-const SIMRISHAMN_HEAT_BOUNDS = {
-  minLat: 55.52,
-  maxLat: 55.59,
-  minLon: 14.31,
-  maxLon: 14.39,
-}
 
 // Summer heat ramp: cyan (cool/low) → emerald → amber → red (hot/critical)
 function heatColor(t) {
@@ -16,6 +10,13 @@ function heatColor(t) {
   if (t < 0.5)  return '#10B981'  // emerald — moderate
   if (t < 0.75) return '#F59E0B'  // amber — high
   return '#EF4444'                 // red — critical
+}
+
+function heatLabel(t) {
+  if (t < 0.25) return 'Low'
+  if (t < 0.5) return 'Moderate'
+  if (t < 0.75) return 'High'
+  return 'Relative peak'
 }
 
 export default function HeatmapLayer() {
@@ -29,28 +30,35 @@ export default function HeatmapLayer() {
       Math.round(value / GRID_SIZE_DEG) * GRID_SIZE_DEG
 
     filteredVisits.forEach(v => {
-      if (
-        v.lat < SIMRISHAMN_HEAT_BOUNDS.minLat || v.lat > SIMRISHAMN_HEAT_BOUNDS.maxLat ||
-        v.lon < SIMRISHAMN_HEAT_BOUNDS.minLon || v.lon > SIMRISHAMN_HEAT_BOUNDS.maxLon
-      ) return
-
       const lon = roundToGrid(v.lon)
       const lat = roundToGrid(v.lat)
       const key = `${lon.toFixed(4)},${lat.toFixed(4)}`
-      grid[key] = (grid[key] || 0) + 1
+      if (!grid[key]) grid[key] = new Set()
+      grid[key].add(v.uid)
     })
 
     const entries = Object.entries(grid)
-    const max = Math.max(...entries.map(([, c]) => c), 1)
+    const max = Math.max(...entries.map(([, s]) => s.size), 1)
 
-    return entries.map(([key, count]) => {
+    return entries.map(([key, set]) => {
       const [lon, lat] = key.split(',').map(Number)
+      const count = set.size
       const intensity = Math.log1p(count) / Math.log1p(max)
-      return { lat, lon, intensity }
+      return { lat, lon, intensity, count }
     })
   }, [filteredVisits])
 
-  return cells.map(({ lat, lon, intensity }, i) => (
+  const uniqueVisibleVisitors = useMemo(
+    () => new Set(filteredVisits.map(v => v.uid)).size,
+    [filteredVisits]
+  )
+
+  const maxCellCount = useMemo(
+    () => cells.reduce((m, c) => Math.max(m, c.count), 0),
+    [cells]
+  )
+
+  return cells.map(({ lat, lon, intensity, count }, i) => (
     <Circle
       key={`h-${i}`}
       center={[lat, lon]}
@@ -61,6 +69,18 @@ export default function HeatmapLayer() {
         fillOpacity: 0.14 + intensity * 0.34,
       }}
     >
+      <Tooltip direction="top" sticky>
+        <div style={{ minWidth: 130 }}>
+          <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 3 }}>Heat hotspot</div>
+          <div style={{ fontSize: 11, color: '#CBD5E1' }}>{count} visitors in cell</div>
+          <div style={{ fontSize: 11, color: '#94A3B8' }}>
+            Share: {((count / Math.max(uniqueVisibleVisitors, 1)) * 100).toFixed(2)}% of visible visitors
+          </div>
+          <div style={{ fontSize: 11, color: '#94A3B8' }}>
+            Level: {heatLabel(intensity)} ({count}/{Math.max(maxCellCount, 1)} max)
+          </div>
+        </div>
+      </Tooltip>
     </Circle>
   ))
 }

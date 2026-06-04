@@ -4,8 +4,6 @@ import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
 import MapLegend       from './MapLegend'
 import HeatmapLayer    from './HeatmapLayer'
-import OvertourismLayer from './OvertourismLayer'
-import OriginLayer     from './OriginLayer'
 
 // Fix Leaflet default icon paths for Vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -19,7 +17,7 @@ L.Icon.Default.mergeOptions({
 const TOWN_CENTER = [55.5567, 14.3523]
 const TOWN_ZOOM   = 13
 export default function MapView() {
-  const { activeLayers, uploadedLayers } = useDashboard()
+  const { activeLayers } = useDashboard()
 
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
@@ -39,17 +37,7 @@ export default function MapView() {
           maxZoom={19}
         />
 
-        {activeLayers.heatmap      && <HeatmapLayer />}
-        {activeLayers.overtourism  && <OvertourismLayer />}
-        {activeLayers.origins      && <OriginLayer />}
-
-        {activeLayers.uploadedGeoJSON && uploadedLayers.map((layer, i) => (
-          <GeoJSON
-            key={i}
-            data={layer.data}
-            style={{ color: '#8B5CF6', weight: 2, fillOpacity: 0.15 }}
-          />
-        ))}
+        {activeLayers.heatmap && <HeatmapLayer />}
       </MapContainer>
     </div>
   )

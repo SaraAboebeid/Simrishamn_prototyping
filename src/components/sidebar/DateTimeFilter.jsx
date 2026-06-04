@@ -34,14 +34,14 @@ export default function DateTimeFilter() {
     setSelectedPeriod(null)
   }
 
-  const badge = filteredVisits.length
+  const badge = new Set(filteredVisits.map(v => v.uid)).size
 
   return (
     <div className="space-y-2">
       <SectionLabel>
         <span className="inline-flex items-center gap-1.5">
           <Calendar size={10} /> Time Filter
-          <span className="ml-auto text-orange-400 font-semibold">{badge.toLocaleString()} visits</span>
+          <span className="ml-auto text-orange-400 font-semibold">{badge.toLocaleString()} visitors</span>
         </span>
       </SectionLabel>
 
@@ -231,8 +231,9 @@ export default function DateTimeFilter() {
 
 function HourSparkline({ hourFrom, hourTo }) {
   const { filteredVisits } = useDashboard()
-  const counts = Array(24).fill(0)
-  filteredVisits.forEach(v => { counts[v.startHour]++ })
+  const hourSets = Array.from({ length: 24 }, () => new Set())
+  filteredVisits.forEach(v => { hourSets[v.startHour].add(v.uid) })
+  const counts = hourSets.map(s => s.size)
   const max = Math.max(...counts, 1)
 
   return (
@@ -243,7 +244,7 @@ function HourSparkline({ hourFrom, hourTo }) {
           <div
             key={h}
             className="flex-1 rounded-sm transition-all"
-            title={`${h}:00 — ${c} visits`}
+            title={`${h}:00 — ${c} visitors`}
             style={{
               height: `${Math.max(4, (c / max) * 100)}%`,
               background: inRange ? '#FF6B35' : '#2D3A52',

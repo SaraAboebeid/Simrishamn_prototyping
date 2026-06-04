@@ -21,8 +21,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return (
     <div className="bg-dash-800 border border-dash-600 rounded-xl p-3 shadow-2xl text-xs">
       <p className="text-slate-400 font-semibold mb-1">{label} 2024</p>
-      <p className="text-white font-bold">{d?.visits} visits</p>
-      <p className="text-slate-400">{d?.uniqueVisitors} unique visitors</p>
+      <p className="text-white font-bold">{d?.visitors} visitors</p>
       <p className="text-slate-400">Avg dwell {d?.avgDwell} min</p>
     </div>
   )
@@ -39,15 +38,15 @@ export default function MonthlyBarChart() {
     [filteredVisits]
   )
 
-  const peak = useMemo(() => data.reduce((a, b) => b.visits > a.visits ? b : a, data[0]), [data])
+  const peakByVisitors = useMemo(() => data.reduce((a, b) => b.visitors > a.visitors ? b : a, data[0]), [data])
 
   return (
     <div className="chart-card bg-dash-800 rounded-2xl border border-dash-600 p-3 flex flex-col h-full">
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
         <div className="w-2 h-2 rounded-full" style={{ background: '#FF6B35' }} />
-        <span className="text-[11px] font-semibold text-slate-200">Monthly Visits 2024</span>
+        <span className="text-[11px] font-semibold text-slate-200">Monthly Visitors 2024</span>
         <span className="ml-auto text-[10px] text-slate-500">
-          Peak <span className="text-orange-400 font-bold">{MONTH_NAMES[peak?.month ?? 1]}</span>
+          Peak <span className="text-orange-400 font-bold">{MONTH_NAMES[peakByVisitors?.month ?? 1]}</span>
         </span>
       </div>
       <div className="flex-1 min-h-0">
@@ -58,11 +57,11 @@ export default function MonthlyBarChart() {
             <YAxis tick={{ fill: '#64748B', fontSize: 9 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
             <ReferenceLine y={0} stroke="#2D3A52" />
-            <Bar dataKey="visits" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+            <Bar dataKey="visitors" radius={[4, 4, 0, 0]} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={i}
                   fill={SEASON_COLORS[i]}
-                  fillOpacity={d.month === peak?.month ? 1 : 0.65}
+                  fillOpacity={d.month === peakByVisitors?.month ? 1 : 0.65}
                 />
               ))}
             </Bar>

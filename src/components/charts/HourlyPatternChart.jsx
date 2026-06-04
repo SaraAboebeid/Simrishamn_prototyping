@@ -20,11 +20,11 @@ function hourColor(h) {
 
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null
-  const { hour, visits } = payload[0].payload
+  const { hour, visitors } = payload[0].payload
   return (
     <div className="bg-dash-700 border border-dash-600 rounded-xl px-3 py-2 text-xs shadow-xl">
       <div className="text-slate-400">{String(hour).padStart(2,'0')}:00 – {String(hour).padStart(2,'0')}:59</div>
-      <div className="text-white font-bold">{visits} visits</div>
+      <div className="text-white font-bold">{visitors} visitors</div>
     </div>
   )
 }
@@ -32,13 +32,13 @@ const CustomTooltip = ({ active, payload }) => {
 export default function HourlyPatternChart() {
   const { filteredVisits } = useDashboard()
   const data = useMemo(() => aggregateHourly(filteredVisits), [filteredVisits])
-  const peak = useMemo(() => data.reduce((a, b) => b.visits > a.visits ? b : a, data[0]), [data])
+  const peak = useMemo(() => data.reduce((a, b) => b.visitors > a.visitors ? b : a, data[0]), [data])
 
   return (
     <div className="chart-card bg-dash-800 rounded-2xl border border-dash-600 p-3 flex flex-col h-full">
       <div className="flex items-center gap-2 mb-2">
         <div className="w-2 h-2 rounded-full" style={{ background: '#FF6B35' }} />
-        <span className="text-[11px] font-semibold text-slate-200">Visit Hour Pattern</span>
+        <span className="text-[11px] font-semibold text-slate-200">Visitor Hour Pattern</span>
         <span className="ml-auto text-[10px] text-slate-500">
           Peak <span className="text-orange-400 font-bold">{String(peak?.hour ?? 0).padStart(2,'0')}:00</span>
         </span>
@@ -66,7 +66,7 @@ export default function HourlyPatternChart() {
             />
             <YAxis tick={{ fill: '#64748B', fontSize: 9 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="visits" radius={[3, 3, 0, 0]} isAnimationActive={false}>
+            <Bar dataKey="visitors" radius={[3, 3, 0, 0]} isAnimationActive={false}>
               {data.map(d => (
                 <Cell key={d.hour} fill={hourColor(d.hour)} />
               ))}
