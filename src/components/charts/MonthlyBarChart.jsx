@@ -6,11 +6,12 @@ import {
 import { useDashboard } from '../../context/DashboardContext'
 import { getFilteredMonthlyData, formatVisitors } from '../../data/simrishamnData'
 
+// Skåne-palette season month colours
 const SEASON_MONTH_COLORS = {
-  // Dec–Feb: winter blue,  Mar–May: spring green,  Jun–Aug: summer orange,  Sep–Nov: autumn amber
-  Jan:'#38BDF8', Feb:'#38BDF8', Mar:'#4ADE80', Apr:'#4ADE80', May:'#4ADE80',
-  Jun:'#FF6B35', Jul:'#FF6B35', Aug:'#FF6B35', Sep:'#F59E0B', Oct:'#F59E0B',
-  Nov:'#F59E0B', Dec:'#38BDF8',
+  // Winter: Skåne blue  |  Spring: emerald  |  Summer: Skåne red  |  Autumn: Skåne gold
+  Jan:'#4169C8', Feb:'#4169C8', Mar:'#22C55E', Apr:'#22C55E', May:'#22C55E',
+  Jun:'#C8102E', Jul:'#C8102E', Aug:'#C8102E', Sep:'#FFCD00', Oct:'#FFCD00',
+  Nov:'#FFCD00', Dec:'#4169C8',
 }
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -40,7 +41,7 @@ export default function MonthlyBarChart() {
   return (
     <div className="panel-card chart-card h-full flex flex-col">
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full bg-tourism-orange" />
+        <div className="w-2 h-2 rounded-full" style={{ background: '#C8102E' }} />
         <h3 className="text-xs font-semibold text-slate-300">Monthly Distribution {selectedYear}</h3>
       </div>
       <div className="flex-1 min-h-0">
