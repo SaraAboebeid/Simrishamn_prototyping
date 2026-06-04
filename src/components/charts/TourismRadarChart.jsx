@@ -5,8 +5,9 @@ import {
 } from 'recharts'
 import { useDashboard } from '../../context/DashboardContext'
 import { attractions, TOURISM_TYPES } from '../../data/simrishamnData'
+import { countVisitsByNearestAttraction } from '../../data/attractionMatching'
 
-const VISIT_RADIUS_DEG = 0.013
+const ATTRACTION_MATCH_RADIUS = 0.015
 
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null
@@ -25,17 +26,7 @@ export default function TourismRadarChart() {
   const { selectedTypes, filteredVisits } = useDashboard()
 
   const data = useMemo(() => {
-    // Count GPS visits per attraction using proximity
-    const counts = {}
-    attractions.forEach(a => { counts[a.id] = 0 })
-    filteredVisits.forEach(v => {
-      attractions.forEach(a => {
-        if (
-          Math.abs(v.lat - a.coords[0]) < VISIT_RADIUS_DEG &&
-          Math.abs(v.lon - a.coords[1]) < VISIT_RADIUS_DEG
-        ) counts[a.id]++
-      })
-    })
+    const counts = countVisitsByNearestAttraction(filteredVisits, attractions, ATTRACTION_MATCH_RADIUS)
     // Group by tourism type
     return TOURISM_TYPES
       .filter(t => selectedTypes.includes(t.id))

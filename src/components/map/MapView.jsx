@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
 import MapLegend       from './MapLegend'
-import AttractionLayer from './AttractionLayer'
 import HeatmapLayer    from './HeatmapLayer'
 import OvertourismLayer from './OvertourismLayer'
 import OriginLayer     from './OriginLayer'
@@ -43,7 +42,6 @@ export default function MapView() {
         {activeLayers.heatmap      && <HeatmapLayer />}
         {activeLayers.overtourism  && <OvertourismLayer />}
         {activeLayers.origins      && <OriginLayer />}
-        {activeLayers.attractions  && <AttractionLayer />}
 
         {activeLayers.uploadedGeoJSON && uploadedLayers.map((layer, i) => (
           <GeoJSON

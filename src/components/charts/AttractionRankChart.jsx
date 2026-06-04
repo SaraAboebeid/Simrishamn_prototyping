@@ -5,9 +5,10 @@ import {
 } from 'recharts'
 import { useDashboard } from '../../context/DashboardContext'
 import { attractions, TOURISM_TYPES } from '../../data/simrishamnData'
+import { countVisitsByNearestAttraction } from '../../data/attractionMatching'
 import { PRESSURE_COLORS } from '../../theme/colors'
 
-const VISIT_RADIUS_DEG = 0.013
+const ATTRACTION_MATCH_RADIUS = 0.015
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
@@ -37,17 +38,7 @@ export default function AttractionRankChart() {
   const { selectedTypes, setSelectedAttraction, filteredVisits } = useDashboard()
 
   const data = useMemo(() => {
-    // Count real GPS visits within radius of each attraction
-    const counts = {}
-    attractions.forEach(a => { counts[a.id] = 0 })
-    filteredVisits.forEach(v => {
-      attractions.forEach(a => {
-        if (
-          Math.abs(v.lat - a.coords[0]) < VISIT_RADIUS_DEG &&
-          Math.abs(v.lon - a.coords[1]) < VISIT_RADIUS_DEG
-        ) counts[a.id]++
-      })
-    })
+    const counts = countVisitsByNearestAttraction(filteredVisits, attractions, ATTRACTION_MATCH_RADIUS)
     return attractions
       .filter(a => selectedTypes.includes(a.type))
       .map(a => ({

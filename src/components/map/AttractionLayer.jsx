@@ -3,10 +3,10 @@ import { Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
 import { getFilteredAttractions, attractions as ALL_ATTRACTIONS, TOURISM_TYPES, formatVisitors } from '../../data/simrishamnData'
+import { countVisitsByNearestAttraction } from '../../data/attractionMatching'
 import { TYPE_COLORS, PRESSURE_COLORS } from '../../theme/colors'
 
-// How close a GPS point must be to count as a visit to this attraction (~1.5 km)
-const VISIT_RADIUS_DEG = 0.013
+const ATTRACTION_MATCH_RADIUS = 0.015
 
 function glowColor(fraction) {
   if (fraction < 0.2)  return '#06B6D4'   // cyan – quiet
@@ -73,9 +73,6 @@ function createIcon(type, fraction, isSelected) {
 
 // ── Popup card ────────────────────────────────────────────────────
 function AttractionPopup({ a, realVisits }) {
-  const pct    = a.capacityPerDay > 0
-    ? Math.round((realVisits / a.capacityPerDay) * 100)
-    : 0
   const pColor = PRESSURE_COLORS[a.pressureLevel]
   const icon   = TOURISM_TYPES.find(t => t.id === a.type)?.icon || '📍'
 
@@ -97,10 +94,6 @@ function AttractionPopup({ a, realVisits }) {
           <div style={{ fontWeight: 700, color: '#FF6B35' }}>{formatVisitors(realVisits)}</div>
         </div>
         <div>
-          <div style={{ color: '#64748B' }}>Capacity use vs day limit</div>
-          <div style={{ fontWeight: 600, color: pct > 80 ? '#EF4444' : '#F1F5F9' }}>{pct}%</div>
-        </div>
-        <div>
           <div style={{ color: '#64748B' }}>Pressure</div>
           <div style={{ fontWeight: 700, color: pColor, textTransform: 'capitalize' }}>
             {a.pressureLevel}
@@ -116,20 +109,11 @@ export default function AttractionLayer() {
   const { selectedTypes, selectedAttraction, setSelectedAttraction, filteredVisits } = useDashboard()
   const filtered = getFilteredAttractions(selectedTypes)
 
-  // Count GPS visits near each attraction (reactive to filter)
-  const visitCounts = useMemo(() => {
-    const counts = {}
-    ALL_ATTRACTIONS.forEach(a => { counts[a.id] = 0 })
-    filteredVisits.forEach(v => {
-      ALL_ATTRACTIONS.forEach(a => {
-        if (
-          Math.abs(v.lat - a.coords[0]) < VISIT_RADIUS_DEG &&
-          Math.abs(v.lon - a.coords[1]) < VISIT_RADIUS_DEG
-        ) counts[a.id]++
-      })
-    })
-    return counts
-  }, [filteredVisits])
+  // Assign each filtered visit to its nearest attraction.
+  const visitCounts = useMemo(
+    () => countVisitsByNearestAttraction(filteredVisits, ALL_ATTRACTIONS, ATTRACTION_MATCH_RADIUS),
+    [filteredVisits]
+  )
 
   const maxCount = useMemo(
     () => Math.max(...Object.values(visitCounts), 1),
@@ -147,7 +131,7 @@ export default function AttractionLayer() {
         {count > 0 && (
           <Circle
             center={a.coords}
-            radius={22 + fraction * 65}
+            radius={45 + fraction * 130}
             pathOptions={{
               color:       glowColor(fraction),
               weight:      1,

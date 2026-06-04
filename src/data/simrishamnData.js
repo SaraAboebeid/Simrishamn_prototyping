@@ -64,14 +64,6 @@ export const attractions = [
     rating: 4.4, capacityPerDay: 3500, pressureLevel: 'medium', area: 'Tobisvik',
   },
   {
-    id: 'sarpens-udde',
-    name: 'Sarpens Udde',
-    type: 'beach',
-    coords: [55.5428, 14.3710],
-    description: 'Windswept coastal headland south of town with rocky shores, wild beach and excellent birdwatching.',
-    rating: 4.3, capacityPerDay: 1500, pressureLevel: 'low', area: 'Simrishamn',
-  },
-  {
     id: 'autoseum',
     name: 'Autoseum – Nisse Nilsson',
     type: 'cultural',

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { TrendingUp, Users, Clock, MapPin, BarChart2, Calendar } from 'lucide-react'
+import { TrendingUp, Clock, BarChart2, Calendar } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
 import { computeKPIs } from '../../data/visitDataLoader'
 import { PRESSURE_COLORS, ORANGE, CYAN } from '../../theme/colors'
@@ -83,17 +83,17 @@ export default function StatsPanel() {
 
       <div className="grid grid-cols-2 gap-1.5 mb-3">
         <KpiCard
-          icon={Users}
-          label="Unique visitors"
-          value={kpi.unique.toLocaleString()}
-          sub={`${kpi.total.toLocaleString()} total visits`}
+          icon={BarChart2}
+          label="Total visits"
+          value={kpi.total.toLocaleString()}
+          sub="all filtered visit records"
           color={CYAN}
         />
         <KpiCard
           icon={Clock}
           label="Avg dwell time"
           value={`${avgDwellH}h`}
-          sub={`${kpi.avgDwellMin} min avg`}
+          sub={`${kpi.avgDwellMin} min mean duration per visit`}
           color={ORANGE}
         />
         <KpiCard

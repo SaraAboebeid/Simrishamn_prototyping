@@ -10,11 +10,10 @@ export function DashboardProvider({ children }) {
   const [uploadedLayers,    setUploadedLayers]    = useState([])
 
   const [activeLayers, setActiveLayers] = useState({
-    attractions:    true,
     heatmap:        true,
     clusters:       false,
     overtourism:    false,
-    origins:        true,
+    origins:        false,
     uploadedGeoJSON:false,
   })
 
@@ -58,8 +57,8 @@ export function DashboardProvider({ children }) {
   useEffect(() => {
     if (!allVisits.length) return
     const filtered = filterVisits(allVisits, {
-      dateFrom,
-      dateTo,
+      dateFrom:  periodMode === 'date' ? dateFrom : null,
+      dateTo:    periodMode === 'date' ? dateTo   : null,
       months:    periodMode === 'month'   ? selectedMonths : null,
       seasonKey: periodMode === 'season'  ? selectedSeason : null,
       periodKey: (periodMode === 'holiday' || periodMode === 'longweekend') ? selectedPeriod : null,
