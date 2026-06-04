@@ -5,7 +5,7 @@ export default {
     extend: {
       colors: {
         tourism: {
-          orange:  '#FF6B35',
+          orange:  '#d9341e',
           cyan:    '#06B6D4',
           emerald: '#10B981',
           amber:   '#F59E0B',
