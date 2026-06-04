@@ -2,17 +2,19 @@
 //  Simrishamn Tourism Dashboard · Mock Data
 //  Replace or augment with real GeoPackage / GeoDataFrame exports.
 // ──────────────────────────────────────────────────────────────────
+import { TYPE_COLORS } from '../theme/colors'
 
 export const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024]
 
 export const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+// Colours sourced from theme/colors.js (Skåne palette)
 export const TOURISM_TYPES = [
-  { id: 'cultural', label: 'Cultural & Heritage', color: '#F59E0B', icon: '🏛️' },
-  { id: 'nature',   label: 'Nature & Parks',      color: '#10B981', icon: '🌿' },
-  { id: 'beach',    label: 'Beaches & Coast',     color: '#06B6D4', icon: '🏖️' },
-  { id: 'food',     label: 'Food & Drink',        color: '#FF6B35', icon: '🍎' },
-  { id: 'events',   label: 'Events & Markets',    color: '#8B5CF6', icon: '🎪' },
+  { id: 'cultural', label: 'Cultural & Heritage', color: TYPE_COLORS.cultural, icon: '🏙️' },
+  { id: 'nature',   label: 'Nature & Parks',      color: TYPE_COLORS.nature,   icon: '🌿' },
+  { id: 'beach',    label: 'Beaches & Coast',     color: TYPE_COLORS.beach,    icon: '🏖️' },
+  { id: 'food',     label: 'Food & Drink',        color: TYPE_COLORS.food,     icon: '🍎' },
+  { id: 'events',   label: 'Events & Markets',    color: TYPE_COLORS.events,   icon: '🎤' },
 ]
 
 export const SEASONS = [
@@ -23,12 +25,7 @@ export const SEASONS = [
   { id: 'winter', label: 'Winter',   months: [11,0,1] },
 ]
 
-export const PRESSURE_COLORS = {
-  low:      '#10B981',
-  medium:   '#F59E0B',
-  high:     '#F97316',
-  critical: '#EF4444',
-}
+// PRESSURE_COLORS moved to src/theme/colors.js — import from there.
 
 // Monthly distribution proportions per year (must sum ≈ 1.0)
 const MONTHLY_PROPS = {
