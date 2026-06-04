@@ -1,7 +1,7 @@
 import React from 'react'
 import { DashboardProvider } from './context/DashboardContext'
-import Sidebar from './components/Sidebar'
-import MapView from './components/MapView'
+import Sidebar     from './components/sidebar/Sidebar'
+import MapView     from './components/map/MapView'
 import ChartsPanel from './components/ChartsPanel'
 
 export default function App() {
