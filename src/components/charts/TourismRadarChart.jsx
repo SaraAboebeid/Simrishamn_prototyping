@@ -4,7 +4,9 @@ import {
   PolarRadiusAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import { useDashboard } from '../../context/DashboardContext'
-import { getTourismTypeStats, formatVisitors } from '../../data/simrishamnData'
+import { attractions, TOURISM_TYPES } from '../../data/simrishamnData'
+
+const VISIT_RADIUS_DEG = 0.013
 
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null
@@ -13,22 +15,41 @@ const CustomTooltip = ({ active, payload }) => {
     <div className="bg-dash-800 border border-dash-600 rounded-xl p-3 shadow-2xl text-xs">
       <p className="text-white font-semibold mb-1">{d?.fullLabel}</p>
       <p className="text-slate-400">
-        Visitors: <span className="text-white font-bold">{formatVisitors(d?.visitors || 0)}</span>
-      </p>
-      <p className="text-slate-400">
-        vs Peak: <span className="text-white font-bold">{d?.peakPct}%</span>
+        GPS visits: <span className="text-white font-bold">{d?.visitors ?? 0}</span>
       </p>
     </div>
   )
 }
 
 export default function TourismRadarChart() {
-  const { selectedYear, selectedTypes } = useDashboard()
+  const { selectedTypes, filteredVisits } = useDashboard()
 
-  const data = useMemo(
-    () => getTourismTypeStats(selectedYear, selectedTypes),
-    [selectedYear, selectedTypes]
-  )
+  const data = useMemo(() => {
+    // Count GPS visits per attraction using proximity
+    const counts = {}
+    attractions.forEach(a => { counts[a.id] = 0 })
+    filteredVisits.forEach(v => {
+      attractions.forEach(a => {
+        if (
+          Math.abs(v.lat - a.coords[0]) < VISIT_RADIUS_DEG &&
+          Math.abs(v.lon - a.coords[1]) < VISIT_RADIUS_DEG
+        ) counts[a.id]++
+      })
+    })
+    // Group by tourism type
+    return TOURISM_TYPES
+      .filter(t => selectedTypes.includes(t.id))
+      .map(t => {
+        const subset = attractions.filter(a => a.type === t.id)
+        const visitors = subset.reduce((s, a) => s + (counts[a.id] || 0), 0)
+        return {
+          subject:   t.label.split(' ')[0],
+          fullLabel: t.label,
+          visitors,
+          color:     t.color,
+        }
+      })
+  }, [filteredVisits, selectedTypes])
 
   const maxVal = Math.max(...data.map(d => d.visitors), 1)
 
@@ -36,7 +57,8 @@ export default function TourismRadarChart() {
     <div className="panel-card chart-card h-full flex flex-col">
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
         <div className="w-2 h-2 rounded-full" style={{ background: '#8B5CF6' }} />
-        <h3 className="text-xs font-semibold text-slate-300">Tourism Type Distribution</h3>
+        <h3 className="text-xs font-semibold text-slate-300">Visits by Tourism Type</h3>
+        <span className="ml-auto text-[9px] text-slate-500">{filteredVisits.length.toLocaleString()} total</span>
       </div>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
@@ -51,11 +73,10 @@ export default function TourismRadarChart() {
               tickCount={4}
               tick={{ fill: '#475569', fontSize: 8 }}
               axisLine={false}
-              tickFormatter={formatVisitors}
             />
             <Tooltip content={<CustomTooltip />} />
             <Radar
-              name="Visitors"
+              name="GPS Visits"
               dataKey="visitors"
               stroke="#8B5CF6"
               strokeWidth={2}
@@ -63,6 +84,7 @@ export default function TourismRadarChart() {
               fillOpacity={0.2}
               dot={{ fill: '#8B5CF6', r: 3, strokeWidth: 0 }}
               activeDot={{ r: 5, fill: '#8B5CF6' }}
+              isAnimationActive={false}
             />
           </RadarChart>
         </ResponsiveContainer>

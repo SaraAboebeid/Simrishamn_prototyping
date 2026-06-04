@@ -1,8 +1,15 @@
 import React from 'react'
 import { Leaf } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
-import { SEASONS } from '../../data/simrishamnData'
 import { SectionLabel } from './ui'
+
+const SEASONS = [
+  { id: 'all',    label: 'All Year' },
+  { id: 'spring', label: 'Spring' },
+  { id: 'summer', label: 'Summer' },
+  { id: 'autumn', label: 'Autumn' },
+  { id: 'winter', label: 'Winter' },
+]
 
 export default function SeasonFilter() {
   const { selectedSeason, setSelectedSeason } = useDashboard()

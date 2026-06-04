@@ -58,7 +58,7 @@ export default function DwellTimeChart() {
             />
             <YAxis tick={{ fill: '#64748B', fontSize: 9 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="visits" radius={[4, 4, 0, 0]}>
+            <Bar dataKey="visits" radius={[4, 4, 0, 0]} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={d.label} fill={BUCKET_COLORS[i]} />
               ))}

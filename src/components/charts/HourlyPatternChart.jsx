@@ -66,7 +66,7 @@ export default function HourlyPatternChart() {
             />
             <YAxis tick={{ fill: '#64748B', fontSize: 9 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="visits" radius={[3, 3, 0, 0]}>
+            <Bar dataKey="visits" radius={[3, 3, 0, 0]} isAnimationActive={false}>
               {data.map(d => (
                 <Cell key={d.hour} fill={hourColor(d.hour)} />
               ))}

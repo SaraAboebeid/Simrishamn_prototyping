@@ -66,10 +66,12 @@ export default function VisitorTrendChart() {
             <Area dataKey="visits" name="Total visits"
               stroke="#06B6D4" strokeWidth={2} fill="url(#gVisits)"
               dot={false} activeDot={{ r: 4, fill: '#06B6D4' }}
+              isAnimationActive={false}
             />
             <Area dataKey="unique" name="Unique visitors"
               stroke="#10B981" strokeWidth={1.5} fill="url(#gUnique)"
               dot={false} activeDot={{ r: 3, fill: '#10B981' }}
+              isAnimationActive={false}
             />
           </AreaChart>
         </ResponsiveContainer>

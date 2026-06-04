@@ -11,7 +11,7 @@ export function DashboardProvider({ children }) {
 
   const [activeLayers, setActiveLayers] = useState({
     attractions:    true,
-    heatmap:        false,
+    heatmap:        true,
     clusters:       false,
     overtourism:    false,
     origins:        false,

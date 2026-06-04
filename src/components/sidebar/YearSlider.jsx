@@ -1,8 +1,9 @@
 import React from 'react'
 import { Calendar } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
-import { YEARS } from '../../data/simrishamnData'
 import { SectionLabel } from './ui'
+
+const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024]
 
 export default function YearSlider() {
   const { selectedYear, setSelectedYear } = useDashboard()

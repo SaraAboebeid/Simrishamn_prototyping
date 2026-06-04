@@ -58,7 +58,7 @@ export default function MonthlyBarChart() {
             <YAxis tick={{ fill: '#64748B', fontSize: 9 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
             <ReferenceLine y={0} stroke="#2D3A52" />
-            <Bar dataKey="visits" radius={[4, 4, 0, 0]}>
+            <Bar dataKey="visits" radius={[4, 4, 0, 0]} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={i}
                   fill={SEASON_COLORS[i]}
