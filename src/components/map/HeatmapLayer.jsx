@@ -32,11 +32,11 @@ export default function HeatmapLayer() {
     <Circle
       key={`h-${i}`}
       center={[lat, lon]}
-      radius={intensity * 600 + 150}
+      radius={intensity * 20 + 8}
       pathOptions={{
         color:       'transparent',
         fillColor:   heatColor(intensity),
-        fillOpacity: 0.12 + intensity * 0.45,
+        fillOpacity: 0.08 + intensity * 0.28,
       }}
     >
     </Circle>

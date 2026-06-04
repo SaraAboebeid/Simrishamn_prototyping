@@ -32,8 +32,9 @@ export default function OriginLayer() {
     const group = L.layerGroup()
 
     origins.forEach(origin => {
-      const weight = 0.5 + (origin.count / maxCount) * 4
-      const opacity = 0.15 + (origin.count / maxCount) * 0.6
+      const intensity = Math.sqrt(origin.count / maxCount)
+      const weight = 0.8 + intensity * 5.2
+      const opacity = 0.18 + intensity * 0.58
 
       const line = L.polyline(
         [[origin.lat, origin.lon], CTR],
@@ -47,7 +48,7 @@ export default function OriginLayer() {
 
       // Circle at origin point
       const circle = L.circleMarker([origin.lat, origin.lon], {
-        radius:      2 + (origin.count / maxCount) * 8,
+        radius:      1.5 + intensity * 4.5,
         color:       '#06B6D4',
         fillColor:   '#06B6D4',
         fillOpacity: 0.7,
@@ -64,7 +65,7 @@ export default function OriginLayer() {
 
     // Destination marker
     const dest = L.circleMarker(CTR, {
-      radius: 8,
+      radius: 5,
       color: '#FF6B35',
       fillColor: '#FF6B35',
       fillOpacity: 0.9,

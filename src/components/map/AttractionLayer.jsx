@@ -20,13 +20,13 @@ function createIcon(type, fraction, isSelected) {
   const fillColor = TYPE_COLORS[type] || '#94A3B8'
   const typeObj   = TOURISM_TYPES.find(t => t.id === type)
   const ring      = glowColor(fraction)
-  const base      = isSelected ? 40 : Math.round(28 + fraction * 18)
+  const base      = isSelected ? 32 : Math.round(20 + fraction * 10)
   const half      = base / 2
 
   // Pulse ring behind marker when traffic is notable
   const pulse = fraction > 0.15 ? `
     <div class="attraction-pulse" style="
-      position:absolute; inset:-${Math.round(fraction * 14)}px;
+      position:absolute; inset:-${Math.round(4 + fraction * 8)}px;
       border-radius:50%;
       border:2px solid ${ring};
       opacity:0.6;
@@ -147,12 +147,12 @@ export default function AttractionLayer() {
         {count > 0 && (
           <Circle
             center={a.coords}
-            radius={400 + fraction * 1200}
+            radius={22 + fraction * 65}
             pathOptions={{
               color:       glowColor(fraction),
               weight:      1,
               fillColor:   glowColor(fraction),
-              fillOpacity: 0.06 + fraction * 0.12,
+              fillOpacity: 0.03 + fraction * 0.07,
             }}
           />
         )}

@@ -14,7 +14,7 @@ export function DashboardProvider({ children }) {
     heatmap:        true,
     clusters:       false,
     overtourism:    false,
-    origins:        false,
+    origins:        true,
     uploadedGeoJSON:false,
   })
 
