@@ -6,11 +6,7 @@ import {
 import { useDashboard } from '../../context/DashboardContext'
 import { aggregateMonthly } from '../../data/visitDataLoader'
 import { MONTH_NAMES } from '../../data/swedishCalendar'
-
-const MONTH_LINE_COLORS = [
-  '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#A78BFA', '#22C55E',
-  '#F97316', '#38BDF8', '#84CC16', '#F43F5E', '#14B8A6', '#EAB308',
-]
+import { MONTH_COLORS } from '../sidebar/DateTimeFilter'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
@@ -74,7 +70,7 @@ function buildMonthComparison(visits, selectedMonths) {
   const lines = months.map((m, i) => ({
     key: `m${m}`,
     name: MONTH_NAMES[m],
-    color: MONTH_LINE_COLORS[i % MONTH_LINE_COLORS.length],
+    color: MONTH_COLORS[(m - 1) % MONTH_COLORS.length],
   }))
 
   return { data, lines, months, xKey: 'label' }
@@ -153,6 +149,22 @@ export default function VisitorTrendChart() {
           <span className="text-slate-500">Brush chart to drill to daily</span>
         </div>
       </div>
+      {isMonthMode && (
+        <div className="mb-3 rounded-xl border border-dash-600 bg-dash-900/60 px-2.5 py-2">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="text-[9px] uppercase tracking-[0.14em] text-slate-500">Month Colors</div>
+            <div className="text-[9px] text-slate-500">{selectedMonths.length ? `${selectedMonths.length} selected` : 'All months visible'}</div>
+          </div>
+          <div className="grid grid-cols-6 gap-x-2 gap-y-1 text-[9px] text-slate-400">
+            {(selectedMonths.length ? selectedMonths : Array.from({ length: 12 }, (_, i) => i + 1)).map(month => (
+              <div key={month} className="flex items-center gap-1.5 min-w-0">
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: MONTH_COLORS[month - 1] }} />
+                <span>{MONTH_NAMES[month]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={mainData} margin={{ top: 4, right: 8, left: -24, bottom: 16 }}>

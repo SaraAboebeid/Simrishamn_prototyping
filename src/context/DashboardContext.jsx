@@ -69,16 +69,7 @@ export function DashboardProvider({ children }) {
   }, [allVisits, dateFrom, dateTo, periodMode, selectedMonths, selectedSeason, selectedPeriod, hourFrom, hourTo])
 
   const toggleLayer = useCallback((key) => {
-    // Map is intentionally locked to heatmap-only mode.
-    if (key !== 'heatmap') return
-    setActiveLayers(prev => ({
-      ...prev,
-      heatmap: true,
-      clusters: false,
-      overtourism: false,
-      origins: false,
-      uploadedGeoJSON: false,
-    }))
+    setActiveLayers(prev => ({ ...prev, [key]: !prev[key] }))
   }, [])
 
   const toggleType = useCallback((type) =>

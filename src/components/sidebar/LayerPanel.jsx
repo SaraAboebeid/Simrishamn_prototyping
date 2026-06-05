@@ -37,15 +37,11 @@ export default function LayerPanel() {
         </span>
       </SectionLabel>
 
-      <div className="text-[9px] text-slate-500 mb-2">
-        Map is locked to <span className="text-cyan-400 font-semibold">Simrishamn Heatmap</span> only.
-      </div>
-
       <div className="space-y-2.5">
         {LAYER_DEFS.map(({ key, label, color, icon: Icon, info }) => (
           <div key={key} className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Icon size={13} style={{ color }} />
+              <Icon size={13} style={{ color: activeLayers[key] ? color : '#475569' }} />
               <span className="text-xs text-slate-300 inline-flex items-center gap-1.5">
                 {label}
                 <span title={info} className="inline-flex items-center text-slate-500 hover:text-slate-300 cursor-help">
@@ -55,9 +51,8 @@ export default function LayerPanel() {
             </div>
             <Toggle
               checked={activeLayers[key]}
-              onChange={() => key === 'heatmap' && toggleLayer(key)}
+              onChange={() => toggleLayer(key)}
               color={color}
-              disabled={key !== 'heatmap'}
             />
           </div>
         ))}

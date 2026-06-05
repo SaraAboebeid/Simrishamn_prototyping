@@ -2,7 +2,6 @@ import React from 'react'
 import SidebarHeader from './SidebarHeader'
 import YearSlider    from './YearSlider'
 import LayerPanel    from './LayerPanel'
-import DateTimeFilter from './DateTimeFilter'
 import StatsPanel    from './StatsPanel'
 import ImportPanel   from './ImportPanel'
 import { Divider }   from './ui'
@@ -13,8 +12,6 @@ export default function Sidebar() {
       <SidebarHeader />
 
       <div className="flex-1 p-4 space-y-1">
-        <DateTimeFilter />
-        <Divider />
         <LayerPanel />
         <Divider />
         <StatsPanel />

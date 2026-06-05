@@ -1,9 +1,12 @@
 import React from 'react'
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
-import MapLegend       from './MapLegend'
-import HeatmapLayer    from './HeatmapLayer'
+import MapLegend          from './MapLegend'
+import HeatmapLayer       from './HeatmapLayer'
+import OriginLayer        from './OriginLayer'
+import OvertourismLayer   from './OvertourismLayer'
+import ClusterLayer       from './ClusterLayer'
 
 // Fix Leaflet default icon paths for Vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -37,7 +40,10 @@ export default function MapView() {
           maxZoom={19}
         />
 
-        {activeLayers.heatmap && <HeatmapLayer />}
+        {activeLayers.heatmap     && <HeatmapLayer />}
+        {activeLayers.origins     && <OriginLayer />}
+        {activeLayers.overtourism && <OvertourismLayer />}
+        {activeLayers.clusters    && <ClusterLayer />}
       </MapContainer>
     </div>
   )

@@ -6,14 +6,7 @@ import {
 import { useDashboard } from '../../context/DashboardContext'
 import { aggregateMonthly } from '../../data/visitDataLoader'
 import { MONTH_NAMES } from '../../data/swedishCalendar'
-
-const SEASON_COLORS = [
-  '#38BDF8','#38BDF8',          // Jan, Feb  – winter
-  '#4ADE80','#4ADE80','#4ADE80',// Mar-May   – spring
-  '#FF6B35','#FF6B35','#FF6B35',// Jun-Aug   – summer
-  '#F59E0B','#F59E0B','#F59E0B',// Sep-Nov   – autumn
-  '#38BDF8',                    // Dec       – winter
-]
+import { MONTH_COLORS } from '../sidebar/DateTimeFilter'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
@@ -49,6 +42,14 @@ export default function MonthlyBarChart() {
           Peak <span className="text-orange-400 font-bold">{MONTH_NAMES[peakByVisitors?.month ?? 1]}</span>
         </span>
       </div>
+      <div className="grid grid-cols-6 gap-x-2 gap-y-1 mb-3 text-[9px] text-slate-400">
+        {MONTH_NAMES.slice(1).map((name, i) => (
+          <div key={name} className="flex items-center gap-1.5 min-w-0">
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: MONTH_COLORS[i] }} />
+            <span>{name}</span>
+          </div>
+        ))}
+      </div>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 0 }} barCategoryGap="12%">
@@ -60,7 +61,7 @@ export default function MonthlyBarChart() {
             <Bar dataKey="visitors" radius={[4, 4, 0, 0]} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={i}
-                  fill={SEASON_COLORS[i]}
+                  fill={MONTH_COLORS[i]}
                   fillOpacity={d.month === peakByVisitors?.month ? 1 : 0.65}
                 />
               ))}

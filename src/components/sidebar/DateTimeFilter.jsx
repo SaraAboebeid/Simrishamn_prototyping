@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Calendar, Clock, Sun, Snowflake, Flag, CalendarDays } from 'lucide-react'
+import React, { useMemo, useState } from 'react'
+import { Calendar, Clock, Sun, Snowflake, Flag, CalendarDays, Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
 import { MONTH_NAMES, SEASONS_2024, HOLIDAYS_2024, LONG_WEEKENDS_2024 } from '../../data/swedishCalendar'
 import { SectionLabel } from './ui'
@@ -13,40 +13,117 @@ const MODE_TABS = [
   { key: 'longweekend', label: 'LW',       icon: Snowflake },
 ]
 
-const SEASON_COLOR = { winter:'#38BDF8', spring:'#4ADE80', summer:'#FF6B35', autumn:'#F59E0B' }
+export const MONTH_COLORS = [
+  '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#A78BFA', '#22C55E',
+  '#F97316', '#38BDF8', '#84CC16', '#F43F5E', '#14B8A6', '#EAB308',
+]
 
-export default function DateTimeFilter() {
+export default function DateTimeFilter({ variant = 'sidebar', collapsed = false, onToggle = null }) {
   const {
     hourFrom, setHourFrom, hourTo, setHourTo,
     dateFrom, setDateFrom, dateTo, setDateTo,
     periodMode, setPeriodMode,
-    selectedMonths, toggleMonth,
+    selectedMonths, toggleMonth, setSelectedMonths,
     selectedSeason, setSelectedSeason,
     selectedPeriod, setSelectedPeriod,
     filteredVisits,
   } = useDashboard()
 
   const [showTime, setShowTime] = useState(false)
+  const isChartVariant = variant === 'chart'
 
   function setMode(k) {
     setPeriodMode(k)
+    if (k !== 'month') setSelectedMonths([])
     setSelectedSeason(null)
     setSelectedPeriod(null)
   }
 
   const badge = new Set(filteredVisits.map(v => v.uid)).size
+  const filterSummary = useMemo(() => {
+    if (periodMode === 'month') {
+      if (!selectedMonths.length) return 'All months'
+      return selectedMonths.map(m => MONTH_NAMES[m]).join(', ')
+    }
+    if (periodMode === 'season') {
+      return SEASONS_2024.find(s => s.key === selectedSeason)?.label || 'No season'
+    }
+    if (periodMode === 'holiday') {
+      return HOLIDAYS_2024.find(h => h.key === selectedPeriod)?.label || 'All holidays'
+    }
+    if (periodMode === 'longweekend') {
+      return LONG_WEEKENDS_2024.find(lw => lw.key === selectedPeriod)?.label || 'All long weekends'
+    }
+    if (periodMode === 'date') {
+      return [dateFrom || 'Start', dateTo || 'End'].join(' to ')
+    }
+    return 'All dates'
+  }, [periodMode, selectedMonths, selectedSeason, selectedPeriod, dateFrom, dateTo])
+
+  if (isChartVariant && collapsed) {
+    return (
+      <button
+        onClick={onToggle}
+        className="rounded-2xl border border-dash-600 bg-dash-800/90 px-3 py-2.5 shadow-[0_10px_28px_rgba(15,23,42,0.2)] flex-shrink-0 text-left w-full hover:border-cyan-400/40 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-300 flex-shrink-0">
+            <Sparkles size={14} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold text-slate-100">Analysis Filters</span>
+              <span className="text-[9px] uppercase tracking-[0.14em] text-slate-500">{badge.toLocaleString()} visible</span>
+            </div>
+            <div className="text-[10px] text-slate-400 truncate">
+              {filterSummary} · {hourFrom}:00–{hourTo}:59
+            </div>
+          </div>
+          <div className="text-slate-500 flex items-center gap-1 text-[10px]">
+            <span>Expand</span>
+            <ChevronDown size={14} />
+          </div>
+        </div>
+      </button>
+    )
+  }
 
   return (
-    <div className="space-y-2">
-      <SectionLabel>
-        <span className="inline-flex items-center gap-1.5">
-          <Calendar size={10} /> Time Filter
-          <span className="ml-auto text-orange-400 font-semibold">{badge.toLocaleString()} visitors</span>
-        </span>
-      </SectionLabel>
+    <div className={isChartVariant ? 'rounded-2xl border border-dash-600 bg-dash-800/90 px-3 py-3 shadow-[0_10px_28px_rgba(15,23,42,0.2)] flex-shrink-0' : 'space-y-2'}>
+      {isChartVariant ? (
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-8 h-8 rounded-xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-300">
+            <Sparkles size={14} />
+          </div>
+          <div>
+            <div className="text-[11px] font-semibold text-slate-100">Analysis Filters</div>
+            <div className="text-[10px] text-slate-500">Adjust time scope next to the active chart</div>
+          </div>
+          <div className="ml-auto text-right">
+            <div className="text-[9px] uppercase tracking-[0.14em] text-slate-500">Visible</div>
+            <div className="text-sm font-bold text-orange-400">{badge.toLocaleString()}</div>
+          </div>
+          <button
+            onClick={onToggle}
+            className="ml-2 flex items-center gap-1 text-[10px] text-slate-400 hover:text-cyan-300 transition-colors"
+          >
+            <span>Collapse</span>
+            <ChevronUp size={14} />
+          </button>
+        </div>
+      ) : (
+        <SectionLabel>
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar size={10} /> Time Filter
+            <span className="ml-auto text-orange-400 font-semibold">{badge.toLocaleString()} visitors</span>
+          </span>
+        </SectionLabel>
+      )}
+
+      <div className={isChartVariant ? 'space-y-2 max-h-44 overflow-y-auto pr-1' : 'space-y-2'}>
 
       {/* Mode tabs */}
-      <div className="grid grid-cols-3 gap-1">
+      <div className={`grid gap-1 ${isChartVariant ? 'grid-cols-6' : 'grid-cols-3'}`}>
         {MODE_TABS.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -102,7 +179,24 @@ export default function DateTimeFilter() {
 
       {/* ── Month grid ─────────────────────── */}
       {periodMode === 'month' && (
-        <div className="grid grid-cols-4 gap-1">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedMonths([])}
+              className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all"
+              style={{
+                background: selectedMonths.length === 0 ? '#06B6D4' : '#1E2840',
+                color: selectedMonths.length === 0 ? '#0D1117' : '#94A3B8',
+                boxShadow: selectedMonths.length === 0 ? '0 2px 10px rgba(6,182,212,0.25)' : 'none',
+              }}
+            >
+              All months
+            </button>
+            <div className="text-[9px] text-slate-500">
+              {selectedMonths.length ? `${selectedMonths.length} selected` : 'Showing Jan-Dec comparison'}
+            </div>
+          </div>
+          <div className={`grid gap-1 ${isChartVariant ? 'grid-cols-6' : 'grid-cols-4'}`}>
           {MONTH_NAMES.slice(1).map((name, i) => {
             const m = i + 1
             const active = selectedMonths.includes(m)
@@ -110,16 +204,21 @@ export default function DateTimeFilter() {
               <button
                 key={m}
                 onClick={() => toggleMonth(m)}
-                className="py-1 rounded-lg text-[10px] font-semibold transition-all"
+                className="py-1 rounded-lg text-[10px] font-semibold transition-all border"
                 style={{
-                  background: active ? '#F59E0B' : '#1E2840',
-                  color:      active ? '#0D1117' : '#94A3B8',
+                  background: active ? `${MONTH_COLORS[i]}22` : '#1E2840',
+                  color:      active ? '#E2E8F0' : '#94A3B8',
+                  borderColor: active ? `${MONTH_COLORS[i]}88` : 'transparent',
                 }}
               >
-                {name}
+                <span className="inline-flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full" style={{ background: MONTH_COLORS[i] }} />
+                  {name}
+                </span>
               </button>
             )
           })}
+          </div>
         </div>
       )}
 
@@ -168,7 +267,7 @@ export default function DateTimeFilter() {
 
       {/* ── Long Weekends ──────────────────── */}
       {periodMode === 'longweekend' && (
-        <div className="space-y-1">
+        <div className="space-y-1 max-h-36 overflow-y-auto pr-0.5">
           {LONG_WEEKENDS_2024.map(lw => (
             <button
               key={lw.key}
@@ -225,6 +324,7 @@ export default function DateTimeFilter() {
           <HourSparkline hourFrom={hourFrom} hourTo={hourTo} />
         </div>
       )}
+      </div>
     </div>
   )
 }
