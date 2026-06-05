@@ -18,8 +18,8 @@ export function Toggle({ checked, onChange, color = '#FF6B35', disabled = false 
       aria-pressed={checked}
     >
       <span
-        className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-200"
-        style={{ transform: checked ? 'translateX(22px)' : 'translateX(2px)' }}
+        className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+        style={{ transform: checked ? 'translateX(20px)' : 'translateX(0)' }}
       />
     </button>
   )
