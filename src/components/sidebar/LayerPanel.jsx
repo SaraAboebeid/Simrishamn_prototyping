@@ -44,8 +44,20 @@ export default function LayerPanel() {
               <Icon size={13} style={{ color: activeLayers[key] ? color : '#475569' }} />
               <span className="text-xs text-slate-300 inline-flex items-center gap-1.5">
                 {label}
-                <span title={info} className="inline-flex items-center text-slate-500 hover:text-slate-300 cursor-help">
-                  <Info size={11} />
+                <span className="relative inline-flex items-center group">
+                  <button
+                    type="button"
+                    className="inline-flex items-center text-slate-500 hover:text-slate-300 cursor-help"
+                    aria-label={`Info: ${label}`}
+                  >
+                    <Info size={11} />
+                  </button>
+                  <span
+                    role="tooltip"
+                    className="pointer-events-none absolute left-1/2 top-full z-20 mt-1 -translate-x-1/2 whitespace-normal w-44 rounded-lg border border-dash-600 bg-dash-900 px-2 py-1 text-[9px] leading-snug text-slate-300 opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+                  >
+                    {info}
+                  </span>
                 </span>
               </span>
             </div>
