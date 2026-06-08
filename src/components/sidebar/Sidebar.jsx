@@ -18,6 +18,20 @@ export default function Sidebar() {
         <Divider />
         <ImportPanel />
       </div>
+
+      <div className="px-4 pb-4 pt-2 text-[10px] leading-snug text-slate-400">
+        <div className="border-t border-dash-600/80 pt-3 space-y-0.5">
+          <div className="text-slate-500 uppercase tracking-wide">Urban Analytics team</div>
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+            <span>Flavia Lopez</span>
+            <span>Sara Abouebeid</span>
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+            <span>Elena Malakhatka</span>
+            <span>Jorge Gil</span>
+          </div>
+        </div>
+      </div>
     </aside>
   )
 }

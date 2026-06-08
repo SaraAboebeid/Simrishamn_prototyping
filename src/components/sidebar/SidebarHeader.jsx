@@ -26,10 +26,13 @@ export default function SidebarHeader() {
         <div className="text-3xl select-none">⛵</div>
         <div>
           <div className="font-bold text-white tracking-[0.12em] text-sm uppercase leading-tight">
-            Simrishamn
+            Visitation Analysis
           </div>
           <div className="text-white/75 text-[11px] leading-tight">
-            Tourism Analytics · GPS Data
+            Tourist Analytics. GPS Data
+          </div>
+          <div className="text-white/60 text-[10px] leading-tight mt-0.5">
+            Urban Analytics Lab
           </div>
         </div>
       </div>
