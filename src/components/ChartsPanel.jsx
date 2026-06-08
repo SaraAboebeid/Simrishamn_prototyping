@@ -1,16 +1,14 @@
 import React, { useState } from 'react'
-import { TrendingUp, BarChart2, Clock, Timer } from 'lucide-react'
+import { TrendingUp, BarChart2, Clock } from 'lucide-react'
 import VisitorTrendChart   from './charts/VisitorTrendChart'
 import MonthlyBarChart     from './charts/MonthlyBarChart'
 import HourlyPatternChart  from './charts/HourlyPatternChart'
-import DwellTimeChart      from './charts/DwellTimeChart'
 import DateTimeFilter      from './sidebar/DateTimeFilter'
 
 const CHART_TABS = [
   { id: 'trend',   label: 'Visitor Trend',  icon: TrendingUp, component: VisitorTrendChart,  accent: '#06B6D4' },
   { id: 'monthly', label: 'Monthly',        icon: BarChart2,  component: MonthlyBarChart,    accent: '#FF6B35' },
   { id: 'hourly',  label: 'Hourly Pattern', icon: Clock,      component: HourlyPatternChart, accent: '#8B5CF6' },
-  { id: 'dwell',   label: 'Dwell Time',     icon: Timer,      component: DwellTimeChart,     accent: '#F59E0B' },
 ]
 
 export default function ChartsPanel() {

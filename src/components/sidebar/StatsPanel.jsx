@@ -120,8 +120,6 @@ export default function StatsPanel() {
   )
   const oti = dataLoaded ? pressure.oti : 0
 
-  const avgDwellH = kpi.avgDwellMin ? (kpi.avgDwellMin / 60).toFixed(1) : '–'
-
   return (
     <div>
       <SectionLabel>
@@ -140,13 +138,6 @@ export default function StatsPanel() {
           color={CYAN}
         />
         <KpiCard
-          icon={Clock}
-          label="Avg dwell time"
-          value={`${avgDwellH}h`}
-          sub={`${kpi.avgDwellMin} min mean duration per visitor`}
-          color={ORANGE}
-        />
-        <KpiCard
           icon={Calendar}
           label="Peak month"
           value={kpi.peakMonth ? MONTH_NAMES[kpi.peakMonth] : '–'}
@@ -159,6 +150,13 @@ export default function StatsPanel() {
           value={kpi.peakHour != null ? `${String(kpi.peakHour).padStart(2,'0')}:00` : '–'}
           sub="most arrivals"
           color="#8B5CF6"
+        />
+        <KpiCard
+          icon={Clock}
+          label="Avg dwell time"
+          value={`${kpi.avgDwellDays.toFixed(2)}d`}
+          sub="mean duration per visitor"
+          color={ORANGE}
         />
       </div>
 
