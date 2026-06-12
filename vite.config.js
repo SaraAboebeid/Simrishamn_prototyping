@@ -49,13 +49,14 @@ function classifyLayer(layerName, geojson) {
   return { kind: 'uploaded', name: layerName, data: geojson }
 }
 
-async function runPythonGpkgConversion(inputPath) {
+async function runPythonGpkgConversion(inputPath, outputDir) {
   const pyCode = [
-    'import geopandas as gpd, pyogrio, json, sys',
+    'import geopandas as gpd, pyogrio, json, sys, os',
     'src = sys.argv[1]',
+    'out_dir = sys.argv[2]',
     'layers = pyogrio.list_layers(src)',
     'out = []',
-    'for layer_name, _geom in layers:',
+    'for idx, (layer_name, _geom) in enumerate(layers):',
     '    gdf = gpd.read_file(src, layer=layer_name).to_crs(epsg=4326)',
     '    for col in gdf.columns:',
     "        if str(gdf[col].dtype).startswith('datetime64'):",
@@ -65,12 +66,16 @@ async function runPythonGpkgConversion(inputPath) {
     '        cent = gdf_proj.geometry.centroid.to_crs(epsg=4326)',
     "        gdf['centroid_lat'] = cent.y",
     "        gdf['centroid_lon'] = cent.x",
-    "    out.append({'name': str(layer_name), 'data': json.loads(gdf.to_json())})",
+    "    safe_name = ''.join(ch if ch.isalnum() or ch in '-_' else '_' for ch in str(layer_name))",
+    "    if not safe_name: safe_name = f'layer_{idx}'",
+    "    out_path = os.path.join(out_dir, f'{idx}_{safe_name}.geojson')",
+    "    gdf.to_file(out_path, driver='GeoJSON')",
+    "    out.append({'name': str(layer_name), 'path': out_path})",
     "print(json.dumps({'layers': out}))",
   ].join('\n')
 
   return new Promise((resolve, reject) => {
-    execFile('python', ['-c', pyCode, inputPath], { maxBuffer: 1024 * 1024 * 50 }, (err, stdout, stderr) => {
+    execFile('python', ['-c', pyCode, inputPath, outputDir], { maxBuffer: 1024 * 1024 * 5 }, (err, stdout, stderr) => {
       if (err) {
         reject(new Error(stderr || err.message))
         return
@@ -106,17 +111,23 @@ function spatialConversionPlugin() {
 
           const bytes = Buffer.from(base64, 'base64')
           const tmpPath = join(tmpdir(), `spatial-${randomUUID()}${ext || ''}`)
+          const outDir = join(tmpdir(), `spatial-out-${randomUUID()}`)
           await fs.writeFile(tmpPath, bytes)
+          await fs.mkdir(outDir, { recursive: true })
 
           let classified = []
 
           if (ext === '.gpkg') {
-            const converted = await runPythonGpkgConversion(tmpPath)
+            const converted = await runPythonGpkgConversion(tmpPath, outDir)
             const layers = converted?.layers || []
-            classified = layers
-              .map(layer => ({ ...layer, data: normalizeGeoJSON(layer.data) }))
-              .filter(layer => layer.data)
-              .map(layer => classifyLayer(layer.name, layer.data))
+            const parsedLayers = await Promise.all(
+              layers.map(async (layer) => {
+                const raw = await fs.readFile(layer.path, 'utf8')
+                const parsed = normalizeGeoJSON(JSON.parse(raw))
+                return parsed ? classifyLayer(layer.name, parsed) : null
+              })
+            )
+            classified = parsedLayers.filter(Boolean)
           } else if (ext === '.geojson' || ext === '.json') {
             const parsed = JSON.parse(bytes.toString('utf8'))
             const geojson = normalizeGeoJSON(parsed)
@@ -131,6 +142,7 @@ function spatialConversionPlugin() {
           }
 
           await fs.unlink(tmpPath).catch(() => {})
+          await fs.rm(outDir, { recursive: true, force: true }).catch(() => {})
 
           const touristStops = classified.find(x => x.kind === 'touristStops')?.data || null
           const touristDeso = classified.find(x => x.kind === 'touristDeso')?.data || null
