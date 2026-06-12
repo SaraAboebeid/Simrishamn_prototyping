@@ -14,8 +14,8 @@ export default function TouristStopsLayer() {
       pointToLayer={(_feature, latlng) =>
         L.circleMarker(latlng, {
           radius:      4,
-          fillColor:   '#FB923C',
-          color:       '#FB923C',
+          fillColor:   '#EC4899',
+          color:       '#EC4899',
           weight:      0.5,
           opacity:     0.8,
           fillOpacity: 0.5,
@@ -25,7 +25,7 @@ export default function TouristStopsLayer() {
         const p = feature.properties ?? {}
         layer.bindPopup(`
           <div style="font-size:11px;min-width:140px">
-            <div style="font-weight:700;margin-bottom:4px;color:#10B981">Tourist Stop</div>
+            <div style="font-weight:700;margin-bottom:4px;color:#EC4899">Tourist Stop</div>
             <div>Duration: ${p.duration ?? '—'}</div>
             <div>Start: ${p.start_time ?? '—'}</div>
             <div>End: ${p.end_time ?? '—'}</div>

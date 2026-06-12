@@ -9,7 +9,7 @@ const LAYER_DEFS = [
     info: 'Shows visit-density hotspots from filtered GPS points.',
   },
   {
-    key: 'touristStops', label: 'Tourist Stops (10 min+)', color: '#FB923C', icon: MapPin,
+    key: 'touristStops', label: 'Tourist Stops (10 min+)', color: '#EC4899', icon: MapPin,
     info: 'All stops >10 min within the sample area made by the 882 identified visitor devices.',
   },
   {

@@ -7,7 +7,7 @@ export default function MapLegend() {
 
   const activeLegendItems = [
     activeLayers.heatmap && { key: 'heatmap', label: 'Heatmap hotspots', color: '#EF4444' },
-    activeLayers.touristStops && { key: 'touristStops', label: 'Tourist stops (10 min+)', color: '#FB923C' },
+    activeLayers.touristStops && { key: 'touristStops', label: 'Tourist stops (10 min+)', color: '#EC4899' },
     activeLayers.clusters && { key: 'clusters', label: 'Visit clusters', color: '#38BDF8' },
     activeLayers.origins && { key: 'origins', label: 'Origin tracking', color: '#06B6D4' },
     activeLayers.uploadedGeoJSON && { key: 'imported', label: 'Imported layer', color: '#8B5CF6' },
