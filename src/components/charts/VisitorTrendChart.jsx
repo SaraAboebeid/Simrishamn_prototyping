@@ -146,7 +146,7 @@ export default function VisitorTrendChart() {
         </span>
         <div className="ml-auto flex gap-3 text-[9px] text-slate-500">
           <span><span className="inline-block w-2 h-2 rounded-full bg-cyan-400 mr-1" />Visitors</span>
-          <span className="text-slate-500">Brush chart to drill to daily</span>
+          {!drillData.length && <span className="text-slate-600 italic">Drag the bar below to zoom into daily detail</span>}
         </div>
       </div>
       {isMonthMode && (
@@ -187,14 +187,27 @@ export default function VisitorTrendChart() {
             ))}
             <Brush
               dataKey={mainXKey}
-              height={16}
-              stroke="#38BDF8"
-              travellerWidth={8}
+              height={26}
+              stroke="#334155"
+              fill="#0F1929"
+              travellerWidth={12}
+              gap={1}
               onChange={handleBrushChange}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
+
+      {!drillData.length && (
+        <div className="flex items-center justify-center gap-1.5 mt-1 text-[9px] text-slate-600">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <rect x="0" y="3" width="3" height="4" rx="1" fill="#475569"/>
+            <rect x="7" y="3" width="3" height="4" rx="1" fill="#475569"/>
+            <line x1="3" y1="5" x2="7" y2="5" stroke="#475569" strokeWidth="1"/>
+          </svg>
+          <span>Drag handles to select a date range and drill into daily visitors</span>
+        </div>
+      )}
 
       {!!drillData.length && (
         <div className="h-24 mt-2 pt-2 border-t border-dash-600">

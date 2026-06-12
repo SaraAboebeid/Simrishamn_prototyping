@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layers, Thermometer, Activity, Upload, Navigation, Info } from 'lucide-react'
+import { Layers, Thermometer, Activity, Upload, Navigation, Info, MapPin } from 'lucide-react'
 import { useDashboard } from '../../context/DashboardContext'
 import { SectionLabel, Toggle } from './ui'
 
@@ -7,6 +7,10 @@ const LAYER_DEFS = [
   {
     key: 'heatmap', label: 'Visitor Heatmap', color: '#EF4444', icon: Thermometer,
     info: 'Shows visit-density hotspots from filtered GPS points.',
+  },
+  {
+    key: 'touristStops', label: 'Tourist Stops (10 min+)', color: '#FB923C', icon: MapPin,
+    info: 'All stops >10 min within the sample area made by the 882 identified visitor devices.',
   },
   {
     key: 'origins', label: 'Visitor Origin Tracking', color: '#06B6D4', icon: Navigation,

@@ -42,9 +42,6 @@ export default function SidebarHeader() {
         <div className="text-xs font-semibold text-white/90 bg-white/20 rounded-full px-3 py-0.5 backdrop-blur-sm">
           {uniqueFiltered.toLocaleString()} visitors
         </div>
-        <div className="text-xs font-semibold rounded-full px-2 py-0.5 backdrop-blur-sm bg-cyan-400/20 text-cyan-200">
-          {uniqueFiltered} unique
-        </div>
         {pct < 100 && (
           <div className="text-xs font-semibold rounded-full px-2 py-0.5 backdrop-blur-sm bg-amber-400/20 text-amber-200">
             {pct}%

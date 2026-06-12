@@ -7,7 +7,6 @@ import React, { useMemo, useEffect, useRef } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
-import { aggregateOrigins } from '../../data/visitDataLoader'
 
 const CTR = [55.5567, 14.3542]   // Simrishamn centre [lat, lon]
 
@@ -71,12 +70,28 @@ function inferPlaceLabel(lat, lon) {
   return `${prefix}: ${best.name}`
 }
 
+// Derive origin clusters from touristDesoData home polygons
+function buildOriginsFromDeso(desoData) {
+  if (!desoData?.features) return []
+  const munis = {}
+  desoData.features.forEach(f => {
+    const p = f.properties ?? {}
+    const name = p.kommunnamn_home
+    const lat  = p.centroid_lat
+    const lon  = p.centroid_lon
+    if (!name || lat == null || lon == null) return
+    if (!munis[name]) munis[name] = { lat, lon, count: 0 }
+    munis[name].count++
+  })
+  return Object.values(munis)
+}
+
 export default function OriginLayer() {
-  const { filteredVisits } = useDashboard()
+  const { touristDesoData } = useDashboard()
   const map    = useMap()
   const svgRef = useRef(null)
 
-  const origins = useMemo(() => aggregateOrigins(filteredVisits), [filteredVisits])
+  const origins  = useMemo(() => buildOriginsFromDeso(touristDesoData), [touristDesoData])
   const maxCount = useMemo(() => Math.max(...origins.map(o => o.count), 1), [origins])
 
   useEffect(() => {

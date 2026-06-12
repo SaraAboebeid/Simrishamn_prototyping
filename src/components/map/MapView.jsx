@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
-import { aggregateOrigins } from '../../data/visitDataLoader'
 import MapLegend          from './MapLegend'
 import HeatmapLayer       from './HeatmapLayer'
 import OriginLayer        from './OriginLayer'
 import OvertourismLayer   from './OvertourismLayer'
 import ClusterLayer       from './ClusterLayer'
+import TouristStopsLayer  from './TouristStopsLayer'
 
 // Fix Leaflet default icon paths for Vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -23,10 +23,19 @@ const TOWN_ZOOM   = 13
 
 function OriginAutoFit() {
   const map = useMap()
-  const { activeLayers, filteredVisits } = useDashboard()
+  const { activeLayers, touristDesoData } = useDashboard()
   const prevOriginsActive = useRef(false)
 
-  const origins = useMemo(() => aggregateOrigins(filteredVisits), [filteredVisits])
+  const origins = useMemo(() => {
+    if (!touristDesoData?.features) return []
+    const munis = {}
+    touristDesoData.features.forEach(f => {
+      const p = f.properties ?? {}
+      if (p.centroid_lat != null && p.centroid_lon != null)
+        munis[p.kommunnamn_home] = { lat: p.centroid_lat, lon: p.centroid_lon }
+    })
+    return Object.values(munis)
+  }, [touristDesoData])
 
   useEffect(() => {
     const justEnabled = activeLayers.origins && !prevOriginsActive.current
@@ -38,8 +47,8 @@ function OriginAutoFit() {
       const bounds = L.latLngBounds(points)
 
       map.flyToBounds(bounds, {
-        padding: [40, 40],
-        maxZoom: 6,
+        padding: [60, 60],
+        maxZoom: 10,
         duration: 1.1,
       })
       return
@@ -84,6 +93,7 @@ export default function MapView() {
         {activeLayers.origins     && <OriginLayer />}
         {activeLayers.overtourism && <OvertourismLayer />}
         {activeLayers.clusters    && <ClusterLayer />}
+        {activeLayers.touristStops && <TouristStopsLayer />}
       </MapContainer>
     </div>
   )

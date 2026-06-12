@@ -20,21 +20,24 @@ function heatLabel(t) {
 }
 
 export default function HeatmapLayer() {
-  const { filteredVisits } = useDashboard()
+  const { touristStopsData } = useDashboard()
 
   // Aggregate to fine grid cells and use log scaling for stable hotspot contrast.
   const cells = useMemo(() => {
+    if (!touristStopsData?.features) return []
     const grid = {}
 
     const roundToGrid = (value) =>
       Math.round(value / GRID_SIZE_DEG) * GRID_SIZE_DEG
 
-    filteredVisits.forEach(v => {
-      const lon = roundToGrid(v.lon)
-      const lat = roundToGrid(v.lat)
+    touristStopsData.features.forEach(f => {
+      if (f.geometry?.type !== 'Point') return
+      const [flon, flat] = f.geometry.coordinates
+      const lon = roundToGrid(flon)
+      const lat = roundToGrid(flat)
       const key = `${lon.toFixed(4)},${lat.toFixed(4)}`
       if (!grid[key]) grid[key] = new Set()
-      grid[key].add(v.uid)
+      grid[key].add(f.properties?.device_uid ?? key)
     })
 
     const entries = Object.entries(grid)
@@ -46,11 +49,11 @@ export default function HeatmapLayer() {
       const intensity = Math.log1p(count) / Math.log1p(max)
       return { lat, lon, intensity, count }
     })
-  }, [filteredVisits])
+  }, [touristStopsData])
 
   const uniqueVisibleVisitors = useMemo(
-    () => new Set(filteredVisits.map(v => v.uid)).size,
-    [filteredVisits]
+    () => new Set((touristStopsData?.features ?? []).map(f => f.properties?.device_uid)).size,
+    [touristStopsData]
   )
 
   const maxCellCount = useMemo(

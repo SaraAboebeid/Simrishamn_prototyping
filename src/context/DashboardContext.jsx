@@ -1,5 +1,36 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { loadVisitData, filterVisits } from '../data/visitDataLoader'
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
+import { filterVisits } from '../data/visitDataLoader'
+
+// Convert a "HH:MM:SS" duration string to minutes
+function parseDurationMin(str) {
+  if (!str) return 0
+  const parts = str.split(':').map(Number)
+  return parts[0] * 60 + (parts[1] || 0) + (parts[2] || 0) / 60
+}
+
+// Transform tourist stop GeoJSON features into the visit record format
+// expected by all charts/KPIs: { uid, lat, lon, date, month, day, startHour, dow, dwellMin }
+function stopsToVisits(geojson) {
+  if (!geojson?.features) return []
+  return geojson.features
+    .filter(f => f.geometry?.type === 'Point' && f.properties?.start_time)
+    .map(f => {
+      const p = f.properties
+      const [lon, lat] = f.geometry.coordinates
+      const dt = new Date(p.start_time)
+      return {
+        uid:       p.device_uid,
+        lat,
+        lon,
+        date:      dt.toISOString().slice(0, 10),
+        month:     dt.getMonth() + 1,
+        day:       dt.getDate(),
+        startHour: dt.getHours(),
+        dow:       (dt.getDay() + 6) % 7,   // Mon=0 … Sun=6
+        dwellMin:  parseDurationMin(p.duration),
+      }
+    })
+}
 
 const DashboardContext = createContext(null)
 
@@ -15,6 +46,8 @@ export function DashboardProvider({ children }) {
     overtourism:    false,
     origins:        false,
     uploadedGeoJSON:false,
+    touristStops:   true,
+    touristDeso:    false,
   })
 
   const [selectedTypes, setSelectedTypes] = useState(
@@ -43,15 +76,29 @@ export function DashboardProvider({ children }) {
   // Derived filtered visits (recomputed on filter change)
   const [filteredVisits, setFilteredVisits] = useState([])
 
-  // Load data once
+  // ── Tourist GPS layer data ─────────────────────────────────────
+  const [touristStopsData, setTouristStopsData] = useState(null)
+  const [touristDesoData,  setTouristDesoData]  = useState(null)
+
   useEffect(() => {
-    loadVisitData().then(data => {
-      setAllVisits(data.visits)
-      setVisitMeta(data.meta)
-      setFilteredVisits(data.visits)
-      setDataLoaded(true)
-    })
+    fetch('/data/tourists_stops_10min.geojson')
+      .then(r => r.json())
+      .then(setTouristStopsData)
+      .catch(err => console.error('Failed to load tourist stops:', err))
+    fetch('/data/tourists_home_deso.geojson')
+      .then(r => r.json())
+      .then(setTouristDesoData)
+      .catch(err => console.error('Failed to load tourist DeSO:', err))
   }, [])
+
+  // Derive visits from real GPS stop data once it loads
+  useEffect(() => {
+    if (!touristStopsData) return
+    const visits = stopsToVisits(touristStopsData)
+    setAllVisits(visits)
+    setFilteredVisits(visits)
+    setDataLoaded(true)
+  }, [touristStopsData])
 
   // Refilter whenever any filter changes
   useEffect(() => {
@@ -93,6 +140,9 @@ export function DashboardProvider({ children }) {
       activeLayers,       toggleLayer,
       selectedTypes,      toggleType,
       uploadedLayers,     addUploadedLayer,
+      // tourist GPS layers
+      touristStopsData,
+      touristDesoData,
       // real data
       allVisits, filteredVisits, visitMeta, dataLoaded,
       // filters
