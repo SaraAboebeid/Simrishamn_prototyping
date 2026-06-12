@@ -21,8 +21,9 @@ We have a general python 3 virtual environment installed under 'database/python/
 Source files can be copied to the 'database/python/source' folder
 
 The environment is activated as
-$ source venv/bin/activate
+$ source realfur_venv/bin/activate
 (venv) CID@cirrus:/database/python$
+nohup python /database/python/source/codes_overtourism_simrishamn/howde_srh_proto_tourism_2024.py > howde_srh_proto_tourism_2024.log 2>&1 &
 
 To leave the venv simply use
 $ deactivate
