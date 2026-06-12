@@ -73,3 +73,35 @@ export function extractProperties(geojson, fields) {
     return out
   })
 }
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const full = String(reader.result || '')
+      const base64 = full.includes(',') ? full.split(',')[1] : full
+      resolve(base64)
+    }
+    reader.onerror = () => reject(new Error('Could not read uploaded file'))
+    reader.readAsDataURL(file)
+  })
+}
+
+/**
+ * Convert and classify an uploaded spatial file (.geojson/.json/.gpkg).
+ * Uses the local Vite conversion API, which runs Python for .gpkg files.
+ */
+export async function convertSpatialUpload(file) {
+  const fileContentBase64 = await fileToBase64(file)
+  const res = await fetch('/api/convert-spatial', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fileName: file.name, fileContentBase64 }),
+  })
+
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || !data?.ok) {
+    throw new Error(data?.error || 'Conversion failed')
+  }
+  return data
+}

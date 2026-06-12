@@ -127,6 +127,31 @@ export function DashboardProvider({ children }) {
   const addUploadedLayer = useCallback((layer) =>
     setUploadedLayers(prev => [...prev, layer]), [])
 
+  const applyImportedDatasets = useCallback((datasets) => {
+    if (!datasets) return
+
+    if (datasets.touristStops) {
+      setTouristStopsData(datasets.touristStops)
+      setActiveLayers(prev => ({
+        ...prev,
+        touristStops: true,
+        heatmap: true,
+      }))
+    }
+
+    if (datasets.touristDeso) {
+      setTouristDesoData(datasets.touristDeso)
+    }
+
+    if (datasets.uploadedLayers?.length) {
+      setUploadedLayers(prev => [...prev, ...datasets.uploadedLayers])
+      setActiveLayers(prev => ({
+        ...prev,
+        uploadedGeoJSON: true,
+      }))
+    }
+  }, [])
+
   const toggleMonth = useCallback((m) =>
     setSelectedMonths(prev =>
       prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]
@@ -140,6 +165,7 @@ export function DashboardProvider({ children }) {
       activeLayers,       toggleLayer,
       selectedTypes,      toggleType,
       uploadedLayers,     addUploadedLayer,
+      applyImportedDatasets,
       // tourist GPS layers
       touristStopsData,
       touristDesoData,
