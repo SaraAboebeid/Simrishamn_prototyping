@@ -3,4 +3,6 @@ node_modules
 # Large data files
 *.gpkg
 *.gdb
-data/
+data
+/data
+data/*

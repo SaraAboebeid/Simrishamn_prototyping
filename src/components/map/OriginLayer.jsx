@@ -1,177 +1,206 @@
 /**
- * OriginLayer — draws "spider / desire lines" from visitor home locations
- * to the Simrishamn area centre, with thickness proportional to count.
- * Uses raw SVG overlay via Leaflet's createPane / SVGOverlay approach.
+ * OriginLayer — draws source-derived arrows from municipality centroids to Simrishamn.
+ * The GeoPackage provides municipality names, while this component maps those names
+ * to real Sweden coordinates so we can render truthful arrows on the map.
  */
-import React, { useMemo, useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { useDashboard } from '../../context/DashboardContext'
 
-const CTR = [55.5567, 14.3542]   // Simrishamn centre [lat, lon]
+const SIMRISHAMN = [55.5567, 14.3542]
 
-const SWEDEN_PLACES = [
-  { name: 'Stockholm', type: 'city', lat: 59.3293, lon: 18.0686 },
-  { name: 'Gothenburg', type: 'city', lat: 57.7089, lon: 11.9746 },
-  { name: 'Malmo', type: 'city', lat: 55.6050, lon: 13.0038 },
-  { name: 'Uppsala', type: 'city', lat: 59.8586, lon: 17.6389 },
-  { name: 'Vasteras', type: 'city', lat: 59.6099, lon: 16.5448 },
-  { name: 'Orebro', type: 'city', lat: 59.2753, lon: 15.2134 },
-  { name: 'Linkoping', type: 'city', lat: 58.4108, lon: 15.6214 },
-  { name: 'Helsingborg', type: 'city', lat: 56.0465, lon: 12.6945 },
-  { name: 'Jonkoping', type: 'city', lat: 57.7826, lon: 14.1618 },
-  { name: 'Norrkoping', type: 'city', lat: 58.5877, lon: 16.1924 },
-  { name: 'Lund', type: 'city', lat: 55.7047, lon: 13.1910 },
-  { name: 'Umea', type: 'city', lat: 63.8258, lon: 20.2630 },
-  { name: 'Lulea', type: 'city', lat: 65.5848, lon: 22.1547 },
-  { name: 'Kalmar', type: 'city', lat: 56.6634, lon: 16.3568 },
-  { name: 'Ystad Municipality', type: 'municipality', lat: 55.4295, lon: 13.8204 },
-  { name: 'Tomelilla Municipality', type: 'municipality', lat: 55.5422, lon: 13.9543 },
-  { name: 'Sjoebo Municipality', type: 'municipality', lat: 55.6314, lon: 13.7061 },
-  { name: 'Kristianstad Municipality', type: 'municipality', lat: 56.0294, lon: 14.1567 },
-  { name: 'Simrishamn Municipality', type: 'municipality', lat: 55.5567, lon: 14.3500 },
-]
-
-function distanceKm(lat1, lon1, lat2, lon2) {
-  const toRad = deg => (deg * Math.PI) / 180
-  const dLat = toRad(lat2 - lat1)
-  const dLon = toRad(lon2 - lon1)
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
-  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+const MUNICIPALITY_POINTS = {
+  'Ale': [57.9297, 12.0670],
+  'Borlänge': [60.4858, 15.4371],
+  'Borås': [57.7210, 12.9401],
+  'Ekerö': [59.2889, 17.8124],
+  'Göteborg': [57.7089, 11.9746],
+  'Halmstad': [56.6745, 12.8578],
+  'Helsingborg': [56.0465, 12.6945],
+  'Huddinge': [59.2360, 17.9810],
+  'Järfälla': [59.4234, 17.8340],
+  'Karlskrona': [56.1612, 15.5869],
+  'Kiruna': [67.8558, 20.2253],
+  'Kristianstad': [56.0313, 14.1524],
+  'Kungsbacka': [57.4870, 12.0760],
+  'Linköping': [58.4108, 15.6214],
+  'Lund': [55.7047, 13.1910],
+  'Malmö': [55.6050, 13.0038],
+  'Norrköping': [58.5877, 16.1924],
+  'Stockholm': [59.3293, 18.0686],
+  'Trelleborg': [55.3751, 13.1569],
+  'Uppsala': [59.8586, 17.6389],
+  'Västerås': [59.6099, 16.5448],
+  'Växjö': [56.8790, 14.8059],
+  'Örebro': [59.2753, 15.2134],
 }
 
-function inferPlaceLabel(lat, lon) {
-  const nearestMunicipality = SWEDEN_PLACES
-    .filter(p => p.type === 'municipality')
-    .map(p => ({
-      ...p,
-      km: distanceKm(lat, lon, p.lat, p.lon),
-    }))
-    .sort((a, b) => a.km - b.km)[0]
+const MUNICIPALITY_ALIASES = {
+  gothenburg: 'Göteborg',
+  malmo: 'Malmö',
+}
 
-  if (nearestMunicipality && nearestMunicipality.km <= 35) {
-    return `Municipality: ${nearestMunicipality.name}`
-  }
+function normalizeName(value = '') {
+  return String(value).trim().toLowerCase().replace(/\s+/g, ' ')
+}
 
-  let best = SWEDEN_PLACES[0]
-  let bestKm = Number.POSITIVE_INFINITY
-
-  SWEDEN_PLACES.forEach(place => {
-    const km = distanceKm(lat, lon, place.lat, place.lon)
-    if (km < bestKm) {
-      best = place
-      bestKm = km
+function getMunicipalityPoint(name) {
+  const raw = String(name ?? '')
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(raw)
+    } catch {
+      return raw
     }
-  })
-
-  const prefix = best.type === 'municipality' ? 'Municipality' : 'Near'
-  return `${prefix}: ${best.name}`
+  })()
+  const alias = MUNICIPALITY_ALIASES[normalizeName(decoded)] ?? decoded
+  return MUNICIPALITY_POINTS[alias] ?? MUNICIPALITY_POINTS[decoded] ?? null
 }
 
-// Derive origin clusters from touristDesoData home polygons
-function buildOriginsFromDeso(desoData) {
-  if (!desoData?.features) return []
-  const munis = {}
-  desoData.features.forEach(f => {
-    const p = f.properties ?? {}
-    const name = p.kommunnamn_home
-    const lat  = p.centroid_lat
-    const lon  = p.centroid_lon
-    if (!name || lat == null || lon == null) return
-    if (!munis[name]) munis[name] = { lat, lon, count: 0 }
-    munis[name].count++
-  })
-  return Object.values(munis)
+function buildOriginsFromFeatures(features) {
+  if (!features?.length) return []
+
+  const grouped = new Map()
+
+  features.forEach(feature => {
+      const properties = feature.properties ?? {}
+      const municipality = properties.kommunnamn_home ?? properties.kommunnamn_other ?? properties.origin_label ?? 'Origin'
+      const code = properties.desokod_home ?? properties.desokod_other ?? null
+      const count = Number(properties.count ?? properties.unique_devices ?? properties.device_count ?? 0)
+      const safeCount = Number.isFinite(count) && count > 0 ? count : 0
+
+      const label = String(municipality)
+      const existing = grouped.get(label) ?? {
+        label,
+        codes: new Set(),
+        count: 0,
+        point: getMunicipalityPoint(municipality),
+      }
+
+      existing.count += safeCount
+      if (code) existing.codes.add(String(code))
+      grouped.set(label, existing)
+    })
+
+  const priority = new Map([
+    ['Stockholm', 0],
+    ['Malmö', 1],
+    ['Göteborg', 2],
+    ['Gothenburg', 2],
+  ])
+
+  return Array.from(grouped.values())
+    .filter(origin => origin.point)
+    .map(origin => ({
+      label: origin.label,
+      codes: Array.from(origin.codes),
+      count: origin.count,
+      point: origin.point,
+    }))
+    .sort((a, b) => {
+      const aRank = priority.get(a.label) ?? 999
+      const bRank = priority.get(b.label) ?? 999
+      if (aRank !== bRank) return aRank - bRank
+      return b.count - a.count || a.label.localeCompare(b.label)
+    })
 }
 
 export default function OriginLayer() {
-  const { touristDesoData } = useDashboard()
-  const map    = useMap()
-  const svgRef = useRef(null)
+  const { touristOriginsData } = useDashboard()
+  const map = useMap()
+  const layerRef = useRef(null)
 
-  const origins  = useMemo(() => buildOriginsFromDeso(touristDesoData), [touristDesoData])
-  const maxCount = useMemo(() => Math.max(...origins.map(o => o.count), 1), [origins])
+  const origins = useMemo(
+    () => buildOriginsFromFeatures(touristOriginsData?.features),
+    [touristOriginsData]
+  )
 
   useEffect(() => {
-    if (!map || !origins.length) return
+    if (!map) return
 
-    // Remove previous SVG overlay
-    if (svgRef.current) {
-      map.removeLayer(svgRef.current)
-      svgRef.current = null
+    if (layerRef.current) {
+      map.removeLayer(layerRef.current)
+      layerRef.current = null
     }
 
-    // Build Leaflet polylines for each origin cluster
+    if (!origins.length) return
+
     const group = L.layerGroup()
 
-    origins.forEach(origin => {
-      const intensity = Math.sqrt(origin.count / maxCount)
-      const weight = 0.8 + intensity * 5.2
-      const opacity = 0.18 + intensity * 0.58
+    const getArrowIcon = () => L.divIcon({
+      className: 'origin-arrowhead-icon',
+      html: '<div style="width:0;height:0;border-left:10px solid #22D3EE;border-top:7px solid transparent;border-bottom:7px solid transparent;filter:drop-shadow(0 0 3px rgba(34, 211, 238, 0.7));"></div>',
+      iconSize: [10, 14],
+      iconAnchor: [0, 7],
+    })
 
-      const line = L.polyline(
-        [[origin.lat, origin.lon], CTR],
-        {
-          color:   '#06B6D4',
-          weight,
-          opacity,
-          dashArray: null,
-        }
-      )
-
-      // Circle at origin point
-      const circle = L.circleMarker([origin.lat, origin.lon], {
-        radius:      1.5 + intensity * 4.5,
-        color:       '#06B6D4',
-        fillColor:   '#06B6D4',
-        fillOpacity: 0.7,
-        weight:      1,
+    origins.slice(0, 12).forEach(origin => {
+      const [lat, lon] = origin.point
+      const line = L.polyline([[lat, lon], SIMRISHAMN], {
+        color: '#22D3EE',
+        weight: 3.5,
+        opacity: 0.92,
+        className: 'origin-arrow-line',
       })
-      const placeLabel = inferPlaceLabel(origin.lat, origin.lon)
+
+      const originMarker = L.circleMarker([lat, lon], {
+        radius: 5,
+        color: '#FB923C',
+        fillColor: '#FB923C',
+        fillOpacity: 0.95,
+        weight: 2,
+        className: 'origin-origin-marker',
+      })
+
+      const destinationMarker = L.marker(SIMRISHAMN, {
+        icon: getArrowIcon(),
+        interactive: false,
+        title: `To Simrishamn from ${origin.label}`,
+      })
+
       const popupHtml = `
         <div style="min-width:190px;font-size:11px;line-height:1.45;color:#0F172A;">
           <div style="font-weight:700;color:#0F172A;margin-bottom:2px;">Origin cluster</div>
           <div style="font-weight:700;color:#0891B2;margin-bottom:2px;">${origin.count} visits</div>
-          <div style="font-weight:600;color:#1E293B;margin-bottom:2px;">${placeLabel}</div>
-          <div style="color:#475569;">${origin.lat.toFixed(2)}°N, ${origin.lon.toFixed(2)}°E</div>
+          <div style="font-weight:600;color:#1E293B;margin-bottom:2px;">${origin.label}</div>
+          ${origin.codes?.length ? `<div style="color:#475569;margin-bottom:2px;">DeSO ${origin.codes.slice(0, 3).join(', ')}</div>` : ''}
         </div>`
 
-      circle.bindPopup(popupHtml, { className: 'origin-popup-light' })
-      circle.bindTooltip(
-        `<div style="font-size:11px;color:#0F172A;font-weight:600;">${placeLabel}</div>`,
+      originMarker.bindPopup(popupHtml, { className: 'origin-popup-light' })
+      originMarker.bindTooltip(
+        `<div style="font-size:11px;color:#0F172A;font-weight:600;">${origin.label}</div>`,
         { direction: 'top', className: 'origin-tooltip-light' }
       )
 
       group.addLayer(line)
-      group.addLayer(circle)
+      group.addLayer(originMarker)
+      group.addLayer(destinationMarker)
     })
 
-    // Destination marker
-    const dest = L.circleMarker(CTR, {
-      radius: 5,
+    const simrishamn = L.circleMarker(SIMRISHAMN, {
+      radius: 6,
       color: '#FF6B35',
       fillColor: '#FF6B35',
-      fillOpacity: 0.9,
+      fillOpacity: 0.95,
       weight: 2,
     })
-    dest.bindTooltip(
+    simrishamn.bindTooltip(
       '<div style="font-size:11px;color:#F1F5F9"><b style="color:#FF6B35">Simrishamn</b><br/>Destination</div>',
       { direction: 'top' }
     )
-    group.addLayer(dest)
+    group.addLayer(simrishamn)
 
     group.addTo(map)
-    svgRef.current = group
+    layerRef.current = group
 
     return () => {
-      if (svgRef.current) {
-        map.removeLayer(svgRef.current)
-        svgRef.current = null
+      if (layerRef.current) {
+        map.removeLayer(layerRef.current)
+        layerRef.current = null
       }
     }
-  }, [map, origins, maxCount])
+  }, [map, origins])
 
   return null
 }

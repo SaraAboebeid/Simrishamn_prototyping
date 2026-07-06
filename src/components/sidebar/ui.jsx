@@ -1,5 +1,7 @@
 // ── Shared UI primitives for sidebar sub-components ──────────────
 
+import React from 'react'
+
 export function SectionLabel({ children }) {
   return <p className="section-label">{children}</p>
 }

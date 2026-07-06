@@ -4,7 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "prepare-data": "node scripts/prepare-default-data.mjs",
+    "prepare-data:deso": "set ORIGIN_GROUPING=deso&& node scripts/prepare-default-data.mjs",
+    "prepare-data:city": "set ORIGIN_GROUPING=city&& node scripts/prepare-default-data.mjs",
+    "predev": "npm run prepare-data",
     "dev": "vite",
+    "prebuild": "npm run prepare-data",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -44,9 +44,9 @@ export function DashboardProvider({ children }) {
     heatmap:        true,
     clusters:       false,
     overtourism:    false,
-    origins:        false,
+    origins:        true,
     uploadedGeoJSON:false,
-    touristStops:   true,
+    touristStops:   false,
     touristDeso:    false,
   })
 
@@ -79,6 +79,7 @@ export function DashboardProvider({ children }) {
   // ── Tourist GPS layer data ─────────────────────────────────────
   const [touristStopsData, setTouristStopsData] = useState(null)
   const [touristDesoData,  setTouristDesoData]  = useState(null)
+  const [touristOriginsData, setTouristOriginsData] = useState(null)
 
   useEffect(() => {
     fetch('/data/tourists_stops_10min.geojson')
@@ -89,6 +90,13 @@ export function DashboardProvider({ children }) {
       .then(r => r.json())
       .then(setTouristDesoData)
       .catch(err => console.error('Failed to load tourist DeSO:', err))
+
+    fetch('/data/tourist_origins.geojson')
+      .then(r => r.json())
+      .then(setTouristOriginsData)
+      .catch(() => {
+        // Optional file; origin layer can still derive from touristDesoData if missing.
+      })
   }, [])
 
   // Derive visits from real GPS stop data once it loads
@@ -143,6 +151,10 @@ export function DashboardProvider({ children }) {
       setTouristDesoData(datasets.touristDeso)
     }
 
+    if (datasets.touristOrigins) {
+      setTouristOriginsData(datasets.touristOrigins)
+    }
+
     if (datasets.uploadedLayers?.length) {
       setUploadedLayers(prev => [...prev, ...datasets.uploadedLayers])
       setActiveLayers(prev => ({
@@ -169,6 +181,7 @@ export function DashboardProvider({ children }) {
       // tourist GPS layers
       touristStopsData,
       touristDesoData,
+      touristOriginsData,
       // real data
       allVisits, filteredVisits, visitMeta, dataLoaded,
       // filters
